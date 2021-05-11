@@ -9,9 +9,9 @@ import glob
 
 parser = argparse.ArgumentParser(description='Extract tiles from WSIs')
 
-parser.add_argument('--slide_dir', default='/well/rittscher/projects/ProMPT_cases/selected_images_by_lisa/selected_from_IHC_study', type=str)
+parser.add_argument('--slide_dir', default='path to WSIs dir', type=str)
 parser.add_argument('--slide_id', default='*', type=str, help='slide filename (or "*" for all slides)')
-parser.add_argument('--save_folder', type=str, default='../tiles', help='folder ')
+parser.add_argument('--save_folder', type=str, default='../tiles', help='path to a folder to save results')
 parser.add_argument('--tile_magnification', type=float, default=10)
 parser.add_argument('--mask_magnification', type=float, default=2.5)
 parser.add_argument('--tile_size', type=int, default=256)

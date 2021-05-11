@@ -13,7 +13,6 @@ import csv
 from torch.utils.data import Dataset
 from torchvision import transforms
 from skimage.morphology import remove_small_objects
-from pathlib import Path
 from wsi_reader import get_reader_impl
 
 
