@@ -4,16 +4,17 @@ try:
 except:
     pass    
 
-# try:
-from pixelengine import PixelEngine
-from softwarerendercontext import SoftwareRenderContext
-from softwarerenderbackend import SoftwareRenderBackend
-# except:
-#     pass
+try:
+    from pixelengine import PixelEngine
+    from softwarerendercontext import SoftwareRenderContext
+    from softwarerenderbackend import SoftwareRenderBackend
+except:
+    pass
     
 import numpy as np    
 import cv2
 from pathlib import Path
+
 
 class WSIReader:
     def close(self):
@@ -371,10 +372,10 @@ class IsyntaxReader(WSIReader):
         if not hasattr(self, '_level_downsamples'):
             self._level_downsamples = [self._view.dimension_ranges(level)[0][1] for level in range(self.level_count)]
         return self._level_downsamples
-           
+
+
 def get_reader_impl(slide_path):
     if Path(slide_path).suffix == '.isyntax':
         return IsyntaxReader
     else:
         return TiffReader
-            
