@@ -18,7 +18,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 
 
 ###  Tile extraction
-**tile-extract/tiling.py** extracts tiles from WSIs passing the following arguments:
+"**tile-extract/tiling.py**" extracts tiles from WSIs passing the following arguments:
 
 * `--slide_dir`:  path to slide directory
 * `--slide_id`:  slide filename (or "*" for all slides)
