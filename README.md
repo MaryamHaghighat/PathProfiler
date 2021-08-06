@@ -2,7 +2,7 @@ Quality Assessment of Retrospective Histopathology Whole-Slide Image Cohorts
 ===========
 In this study, a quality assessment pipeline is  proposed in which possible multiple artefacts are predicted in a same region along with diagnostic usability of the image. 
 
-***How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
+**How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
 
 
 ###  WSI Tissue Segmentation:
