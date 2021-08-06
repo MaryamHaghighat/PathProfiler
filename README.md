@@ -34,6 +34,7 @@ The following optional arguments can be used to run the model:
 
 ### Quality assessment 
 <img src="imgs/pipeline.jpg" align="center" />
+
 A multi-label ResNet18 model ([download](https://drive.google.com/file/d/13egPkDufR6W4aTBUAAf8uV6zQxwdBx6r/view?usp=sharing)) with 6 outputs of linear activation function is trained on image tiles from ProMPT prostate cancer cohort.  
 Annotated tiles are  256x256 in size and have been exctracted at 5X magnification. Tiles are further downsampled to 224x224 to accomodate for the model.
 The model outputs are:
