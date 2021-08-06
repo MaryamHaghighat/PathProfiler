@@ -13,8 +13,6 @@ from wsi_reader_org import get_reader_impl
 
 parser = argparse.ArgumentParser(description='Estimate WSI subjective scores')
 parser.add_argument('--quality_overlays_dir', type=str, default='quality-overlays')
-parser.add_argument('--slide_dir', default='path to slide dir', type=str)
-parser.add_argument('--slide_suffix', default='.svs', type=str)
 parser.add_argument('--tumor_mask_dir', default='', help='add another mask, e.g. tumor mask on top of tissue mask')
 parser.add_argument('--slide_scores_filename', default='slide_scores.csv', type=str)
 args = parser.parse_args()
