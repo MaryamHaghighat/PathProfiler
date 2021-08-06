@@ -48,6 +48,8 @@ The model outputs are:
 
 **Notes**: ProMPT dataset has very limited areas of folded tissue and hence our dataset does not include a various forms of tissue folding in histology.
 
+<img src="imgs/overlays.png" align="center" />
+
 ======
 To use the quality assessment tool, run:
 **python run.py** by passing the following arguments:
