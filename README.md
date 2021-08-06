@@ -71,7 +71,7 @@ Quality overlays are collected in a dictionary and saved as **slide_name.npy** w
 ```
     
 **Notes:**
-- the pixel size of quality overlays is (slide_size_at_5X) / 256:
+- the pixel size of quality overlays saved in "slide_name.npy" is (slide_size_at_5X) / 256.
 - each pixel value in the quality overlay represents quality prediction value for a tile of  256*256. 
 - quality overlays can be easily regenerated at magnification "X" by: 
 
