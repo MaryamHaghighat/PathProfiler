@@ -1,11 +1,11 @@
 Quality Assessment of Retrospective Histopathology Whole-Slide Image Cohorts
-=================
+===================================================
 
 In this study, a quality assessment pipeline is  proposed in which possible multiple artefacts are predicted in a same region along with diagnostic usability of the image. 
 
 **How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
 
-=================
+===================================================
 ### Tissue Segmentation:
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
@@ -17,7 +17,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--mask_magnification`:  magnification power of generated tissue masks. It is recommended to use 1.25 or 2.5.
 * `--mpp_level0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
-=================
+===================================================
 ###  Tile extraction
 "**tile-extract/tiling.py**" extracts tiles from WSIs passing the following arguments:
 
@@ -32,7 +32,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--mask_ratio`:  the minimum acceptable masked area (available tissue) to extract tile
 * `--mpp_level0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
-=================
+===================================================
 ### Quality assessment 
 <img src="imgs/pipeline.jpg" align="center" />
 
