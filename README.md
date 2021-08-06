@@ -5,9 +5,6 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 ***How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of whole slide.
 
 
-## Pipeline:
-<img src="imgs/pipeline.jpg" align="center" />
-
 ###  WSI Tissue Segmentation:
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
@@ -36,6 +33,7 @@ The following optional arguments can be used to run the model:
 * `--mpp_level0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
 ### Quality assessment 
+<img src="imgs/pipeline.jpg" align="center" />
 A multi-label ResNet18 model ([download](https://drive.google.com/file/d/13egPkDufR6W4aTBUAAf8uV6zQxwdBx6r/view?usp=sharing)) with 6 outputs of linear activation function is trained on image tiles from ProMPT prostate cancer cohort.  
 Annotated tiles are  256x256 in size and have been exctracted at 5X magnification. Tiles are further downsampled to 224x224 to accomodate for the model.
 The model outputs are:
