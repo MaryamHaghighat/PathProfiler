@@ -87,5 +87,6 @@ To map the quality overlays to standard slide-level scores, run:
 * `--tumor_mask_dir`:  add another mask (e.g. tumor mask) on top of tissue mask; default is None.
 * `--slide_scores_filename`:  csv filename to save standard quality scores for each slide
 
-While our model has not been trained on external WSIs such as TCGA, the estimated quality overlays and standard WSI quality scores for TCGA-prostate dataset is provided [here](https://drive.google.com/file/d/) for further investigation.
+Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 histology slides collated between 2001-2018 as part of a UK-based observational study. While the model has not been trained on external WSIs such as TCGA, we estimated quality overlays and standard WSI quality scores for TCGA-prostate dataset [here](https://drive.google.com/file/d/) for further community investigation. With the help of community to  collect various artefacts in different tissue types, this work can be extended to a comprehensive and clinically relevant quality assessment tool. 
+
 
