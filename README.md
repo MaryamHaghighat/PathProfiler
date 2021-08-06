@@ -52,8 +52,8 @@ The model outputs are:
 <img src="imgs/overlays.png" align="center" />
 
 ======
-To use the quality assessment tool, run:
-**python run.py** by passing the following arguments:
+To start quality assessment tool, run:
+**python quality-assessment/run.py** by passing the following arguments:
 * `--slide_dir`:  path to slides
 * `--slide_id`:  slide filename or "*" for going through all slides.
 * `--mpp_level0`: manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
