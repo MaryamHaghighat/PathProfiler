@@ -14,7 +14,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 from skimage.morphology import remove_small_objects
 from wsi_reader import get_reader_impl
-
+import math
 
 
 import argparse
@@ -24,6 +24,7 @@ parser.add_argument('--slide_dir', default='path to WSIs dir', type=str)
 parser.add_argument('--slide_id', default='*', type=str, help='slide filename ("*" for all slides)')
 parser.add_argument('--model', default=os.path.join('checkpoint_147800.pth'), type=str)
 parser.add_argument('--mask_magnification', default=2.5, type=float)
+parser.add_argument('--mpp_level0', default=None, type=float)
 parser.add_argument('--gpu_id', default='0', type=str)
 parser.add_argument('--tile_size', default=512, type=int)
 parser.add_argument('--batch_size', default=8, type=int)
@@ -124,17 +125,22 @@ class TilePrediction(object):
         mpp2mag = {.2: 40, .3: 40, .5: 20, 1: 10}
         reader = get_reader_impl(filename)
         slide = reader(filename)
-        print('MPP', slide.mpp)
-        print('dims', slide.level_dimensions[0])
-        if slide.mpp is None:
-            mpp = .2
+        if args.mpp_level0:
+            print('slides mpp manually set to', args.mpp_level0)
+            mpp=args.mpp_level0
         else:
-            mpp = slide.mpp[0]
+            try:
+                mpp = slide.mpp['MPP']
+            except:
+                print('slide mpp is not available as "slide.mpp"\n use --mpp_level0 to enter mpp at level 0 manually.')
+
         wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
         level = int(np.log2(wsi_highest_magnification / args.mask_magnification))
-        print(level)
-        print(slide.level_dimensions)
-        img, _ = slide.read_region((0, 0), level, slide.level_dimensions[level], normalize=False)
+        try:
+            slide_level_dimensions = slide.level_dimensions[level]
+        except:
+            slide_level_dimensions = (int(math.ceil(slide.level_dimensions[0][0]/2**level)), int(math.ceil(slide.level_dimensions[0][1]/2**level)))
+        img, _ = slide.read_region((0, 0), level, slide_level_dimensions, normalize=False)
         img = self._pad_img(img)
 
         return img

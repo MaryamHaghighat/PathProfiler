@@ -6,9 +6,11 @@ import time
 import cv2
 from wsi_reader import get_reader_impl
 import glob
+import matplotlib.pyplot as plt
+import random
+
 
 parser = argparse.ArgumentParser(description='Extract tiles from WSIs')
-
 parser.add_argument('--slide_dir', default='path to WSIs dir', type=str)
 parser.add_argument('--slide_id', default='*', type=str, help='slide filename (or "*" for all slides)')
 parser.add_argument('--save_folder', type=str, default='../tiles', help='path to a folder to save results')
@@ -18,8 +20,9 @@ parser.add_argument('--tile_size', type=int, default=256)
 parser.add_argument('--stride', type=int, default=256)
 parser.add_argument('--mask_dir', default='path to tissue mask folder')
 parser.add_argument('--mask_ratio', type=float, default=0.2)
+parser.add_argument('--mpp_level0', type=float, default=None, help='manually enter mpp at level 0 if not readable from slides')
 
-args = parser.parse_args()
+
 
 
 def tiling(wsi_filename,
@@ -36,10 +39,9 @@ def tiling(wsi_filename,
     :param tile_magnification: the magnification at which tiles are extracted. The default is 10
     :param tile_size: pixel size of the tiles; the default is 256
     :param stride: stride; the default is 256
-    :param mask_dir: dir to tissue mask images
+    :param mask_dir: dir to mask images
     :param mask_magnification: the magnification at which masks are generated. The default is 2.5
     :param mask_ratio: minimum acceptable ratio of masked area. The default is 0.2
-    :return:
     '''
 
     t = time.time()
@@ -56,6 +58,7 @@ def tiling(wsi_filename,
     mask_filename = os.path.join(mask_dir, slideID + '.jpg')
 
     #############################################################
+
     if not os.path.exists(save_location):
         os.makedirs(save_location)
     #############################################################
@@ -70,18 +73,25 @@ def tiling(wsi_filename,
     reader = get_reader_impl(wsi_filename)
     slide = reader(wsi_filename)
 
-    if slide.mpp is None:
-        mpp = .2
+    if args.mpp_level0:
+        print('slides mpp manually set to', args.mpp_level0)
+        mpp=args.mpp_level0
     else:
-        mpp = slide.mpp[0]
+        try:
+            mpp = slide.mpp['MPP']
+            print(mpp)
+        except:
+            print('slide mpp is not available as "slide.mpp"\n use --mpp_level0 to enter mpp at level 0 manually.')
 
     wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
 
     #############################################################
 
     level = int(np.log2(wsi_highest_magnification / tile_magnification))
+    print('level', level)
     ###########################################################################################
-    ncol, nrow = slide.level_dimensions[level]
+#    ncol, nrow = slide.level_dimensions[level]
+    ncol, nrow = int(slide.level_dimensions[0][0]/2**level), int(slide.level_dimensions[0][1]/2**level)
 
     for x in range(0, ncol, stride):
         for y in range(0, nrow, stride):
@@ -89,13 +99,13 @@ def tiling(wsi_filename,
             if mask_dir:
                 crop_mask = mask[int(y / mask_downsample): mask_tile_size + int(y / mask_downsample),
                 int(x / mask_downsample): mask_tile_size + int(x / mask_downsample)]
-                if crop_mask.mean() < mask_ratio:
+                if (crop_mask.mean() < mask_ratio): #or (random.randrange(0,100)>5):
                     continue
 
-            savename = os.path.join(save_location, slideID + f'_obj_{wsi_highest_magnification}x_{tile_magnification}x_x_{x}_y_{y}.jpg')
+            savename = os.path.join(save_location, slideID + f'_obj_{wsi_highest_magnification}x_{tile_magnification}x_x_{x}_y_{y}.png')
             if not os.path.exists(savename):
                 try:
-                    crop_img, _ = slide.read_region((x, y), level, (tile_size, tile_size), normalize=False)
+                    crop_img, _ = slide.read_region((x, y), level, (tile_size, tile_size), downsample_level_0=True, normalize=False)
                 except:
                     slide = reader(wsi_filename)
                     continue
