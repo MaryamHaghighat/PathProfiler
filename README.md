@@ -37,6 +37,7 @@ The following optional arguments can be used to run the model:
 A multi-label ResNet18 model ([download](https://drive.google.com/file/d/13egPkDufR6W4aTBUAAf8uV6zQxwdBx6r/view?usp=sharing)) with 6 outputs of linear activation function is trained on image tiles from ProMPT prostate cancer cohort.  
 Annotated tiles are  256x256 in size and have been exctracted at 5X magnification. Tiles are further downsampled to 224x224 to accomodate for the model.
 The model outputs are:
+
 * `output1`:  predicts the usability of an image, where 1 indicates the image is of appropriate quality for diagnosis.
 * `output2`:  predicts if an image looks normal, where 1 indicates no artefact seen.
 * `output3`:  predicts if an image is out of focus, where 1 indicates severe, 0.5 slight, and 0 no focus issues.
