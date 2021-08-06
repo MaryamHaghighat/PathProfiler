@@ -8,8 +8,7 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 ###  WSI Tissue Segmentation:
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
-A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5WnaJ4W9ynTOF1XS755CsxEa4qj/view?usp=sharing)) is trained on multiple tissue types including prostate and colon tissue to separate tissue from background.
-The following optional arguments can be used to run the model:
+A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5WnaJ4W9ynTOF1XS755CsxEa4qj/view?usp=sharing)) is trained on multiple tissue types including prostate and colon tissue to separate tissue from background. It can be deployed by **tissue_segmentation/run.py** with the following optional arguments: 
 
 * `--slide_dir`:  path to slide directory
 * `--slide_id`:  slide filename (or "*" for all slides)
@@ -19,7 +18,7 @@ The following optional arguments can be used to run the model:
 
 
 ###  Tile extraction
-**tiling.py** extracts tiles from WSIs passing the following arguments:
+**tile-extract/tiling.py** extracts tiles from WSIs passing the following arguments:
 
 * `--slide_dir`:  path to slide directory
 * `--slide_id`:  slide filename (or "*" for all slides)
