@@ -70,7 +70,7 @@ Quality overlays are collected in a dictionary and saved as **slide_name.npy** w
 'processed_region': regions that have been processed during quality assessment} 
 ```
     
-**Notes**
+**Notes:**
 - the pixel size of quality overlays is (slide_size_at_5X) / 256:
 - each pixel value in the quality overlay represents quality prediction value for a tile of  256*256. 
 - quality overlays can be easily regenerated at magnification "X" by: 
@@ -83,6 +83,9 @@ Quality overlays are collected in a dictionary and saved as **slide_name.npy** w
 Three separate linear regression models are used to predict WSI usability, focus and staining scores. 
 To map the quality overlays to standard slide-level scores, run:
 **python predict_slide_scores.py** by passing the following arguments:
-* `--quality_overlays_dir`:  path to quality overlays folder
-* `--add_mask`:  add another mask (e.g. tumor mask) on top of tissue mask
-* `--slide_scores_filename`:  csv filename to save standard scores for each slide
+* `--quality_overlays_dir`:  path to the quality overlays folder
+* `--tumor_mask_dir`:  add another mask (e.g. tumor mask) on top of tissue mask; default is None.
+* `--slide_scores_filename`:  csv filename to save standard quality scores for each slide
+
+While our model has not been trained on external WSIs such as TCGA, the estimated quality overlays and standard WSI quality scores for TCGA-prostate dataset is provided [here](https://drive.google.com/file/d/) for further investigation.
+
