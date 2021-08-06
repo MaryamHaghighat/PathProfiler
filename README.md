@@ -9,7 +9,7 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 ### Tissue Segmentation:
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
-A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5WnaJ4W9ynTOF1XS755CsxEa4qj/view?usp=sharing)) is trained on multiple tissue types including prostate and colon tissue to separate tissue from background. It can be deployed by running "**tissue_segmentation/run.py**" with the following optional arguments: 
+A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5WnaJ4W9ynTOF1XS755CsxEa4qj/view?usp=sharing)) is trained on multiple tissue types including prostate and colon tissue to separate tissue from background. It can be deployed by running "**tissue_segmentation/run.py**" with the following arguments: 
 
 * `--slide_dir`:  path to slide directory
 * `--slide_id`:  slide filename (or "*" for all slides)
