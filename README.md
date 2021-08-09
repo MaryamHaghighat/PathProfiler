@@ -1,14 +1,15 @@
 Quality Assessment of Retrospective Histopathology Whole-Slide Image Cohorts
-===========
+===================================================
+
 In this study, a quality assessment pipeline is  proposed in which possible multiple artefacts are predicted in a same region along with diagnostic usability of the image. 
 
 **How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
 
-
-###  WSI Tissue Segmentation:
+===================================================
+### Tissue Segmentation:
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
-A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5WnaJ4W9ynTOF1XS755CsxEa4qj/view?usp=sharing)) is trained on multiple tissue types including prostate and colon tissue to separate tissue from background. It can be deployed by running "**tissue_segmentation/run.py**" with the following optional arguments: 
+A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5WnaJ4W9ynTOF1XS755CsxEa4qj/view?usp=sharing)) is trained on multiple tissue types including prostate and colon tissue to separate tissue from background. It can be deployed by running "**tissue_segmentation/run.py**" with the following arguments: 
 
 * `--slide_dir`:  path to slide directory
 * `--slide_id`:  slide filename (or "*" for all slides)
@@ -16,7 +17,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--mask_magnification`:  magnification power of generated tissue masks. It is recommended to use 1.25 or 2.5.
 * `--mpp_level0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
-
+===================================================
 ###  Tile extraction
 "**tile-extract/tiling.py**" extracts tiles from WSIs passing the following arguments:
 
@@ -31,6 +32,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--mask_ratio`:  the minimum acceptable masked area (available tissue) to extract tile
 * `--mpp_level0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
+===================================================
 ### Quality assessment 
 <img src="imgs/pipeline.jpg" align="center" />
 
@@ -50,7 +52,7 @@ The model outputs are:
 
 <img src="imgs/overlays.png" align="center" />
 
-======
+
 To start quality assessment tool, run:
 **python quality-assessment/run.py** by passing the following arguments:
 * `--slide_dir`:  path to slides
@@ -68,19 +70,23 @@ Quality overlays are collected in a dictionary and saved as **slide_name.npy** w
 'processed_region': regions that have been processed during quality assessment} 
 ```
     
-**Notes**
-- the pixel size of quality overlays is (slide_size_at_5X) / 256:
+**Notes:**
+- the pixel size of quality overlays saved in "slide_name.npy" is (slide_size_at_5X) / 256.
 - each pixel value in the quality overlay represents quality prediction value for a tile of  256*256. 
 - quality overlays can be easily regenerated at magnification "X" by: 
 
 `overlay at magnification X = overlay.repeat(X*256/5, axis=0).repeat(X*256/5, axis=1)`
 
-=====
+
 
 ### Mapping quality overlays to standard whole-slide quality scores  
 Three separate linear regression models are used to predict WSI usability, focus and staining scores. 
 To map the quality overlays to standard slide-level scores, run:
 **python predict_slide_scores.py** by passing the following arguments:
-* `--quality_overlays_dir`:  path to quality overlays folder
-* `--add_mask`:  add another mask (e.g. tumor mask) on top of tissue mask
-* `--slide_scores_filename`:  csv filename to save standard scores for each slide
+* `--quality_overlays_dir`:  path to the quality overlays folder
+* `--tumor_mask_dir`:  add another mask (e.g. tumor mask) on top of tissue mask; default is None.
+* `--slide_scores_filename`:  csv filename to save standard quality scores for each slide
+
+Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 histology slides of prostate cancer collated between 2001-2018 as part of a UK-based observational study. While the model has not been trained on external WSIs such as TCGA, we estimated quality overlays and standard WSI quality scores for TCGA-prostate dataset [here](https://drive.google.com/drive/folders/1ZkKKvln5kipkQlYuf2Yoc3dUVfVLAwDA?usp=sharing) for further community investigation. With the help of community to  collect various artefacts in different tissue types, this work can be extended to a comprehensive and clinically relevant quality assessment tool. 
+
+
