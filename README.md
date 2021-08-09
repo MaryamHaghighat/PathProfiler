@@ -87,6 +87,40 @@ To map the quality overlays to standard slide-level scores, run:
 * `--tumor_mask_dir`:  add another mask (e.g. tumor mask) on top of tissue mask; default is None.
 * `--slide_scores_filename`:  csv filename to save standard quality scores for each slide
 
-Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 histology slides of prostate cancer collated between 2001-2018 as part of a UK-based observational study. While the model has not been trained on external WSIs such as TCGA, we estimated quality overlays and standard WSI quality scores for TCGA-prostate dataset [here](https://drive.google.com/drive/folders/1ZkKKvln5kipkQlYuf2Yoc3dUVfVLAwDA?usp=sharing) for further community investigation. With the help of community to  collect various artefacts in different tissue types, this work can be extended to a comprehensive and clinically relevant quality assessment tool. 
+Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 histology slides of prostate cancer collated between 2001-2018 as part of a UK-based observational study. While the model has not been trained or validated on external cohorts, we estimated quality overlays for WSIs in TCGA-prostate and FOCUS datasets  ([here](https://drive.google.com/drive/folders/1D9fIt67dBxaOqWcOXYpZWiKaYGhAXwZu?usp=sharing)) for further community investigation. Estimated  standard WSI quality scores for TCGA ([here](https://drive.google.com/file/d/1Kuz1TOQ_HHFKdeuV1bNpTAl58EDLXXM1/view?usp=sharing)) and tumor regions of FOCUS slides ([here](https://drive.google.com/file/d/1emvYNkmCuCjdDvUQOH6W4zdgOUEoLNVG/view?usp=sharing)) are also provided . With the help of community to  collect various artefacts in different tissue types, we believe the model performance will improve for external cohorts and hence this work can be extended to a comprehensive and clinically relevant quality assessment tool. 
+
+### Examples (run the pipeline on TCGA slides)
+1- Tissue segmentation
+``` shell
+python tissue-segmentation/run.py --save_folder ../tissue-masks/TCGA --slide_dir TCGA_slides_Directory --mask_magnification 1.25 --mpp_level0 .25
+```
+2- Generate quality overlays:
+``` shell
+python quality-assessment/run.py --slide_dir TCGA_slides_Directory --mask_dir ../tissue-masks/TCGA --mask_magnification 1.25 --mask_ratio .2 --mpp_level0 .25 --save_folder quality-overlays/TCGA
+```
+3- Predict slide-level scores
+``` shell
+python quality-assessment/predict_slide_scores.py --quality_overlays_dir quality-overlays/TCGA --slide_scores_filename TCGA_slide_scores.csv
+```
+
+## To do
+Current model is trained and tested on the ProMPT cohort produced and scanned in the Cellular Pathology Department at Oxford University Hospitals NHS Foundation Trust (OUHFT). To improve the model performance on other cohorts (e.g TCGA) we intend to incorporate images from different cohorts to the training process using semi-supervised techniques. However, a community effort is required to build a comprehensive quality assessment tool for histology slides and  validate results on other cohorts.
 
 
+## License
+© To be added - This code is available for non-commercial academic purposes.
+
+## Funding
+This work is supported by the PathLAKE Centre of Excellence for digital pathology and AI which is funded, managed and delivered by Innovate UK on behalf of UK Research and Innovation (UKRI). 
+
+## Reference
+Please refer to our pre-print (http://) for detailed results.
+If you find our work useful in your research or if you use parts of this code please consider citing our paper:
+```
+@inproceedings{DeepQC,
+  title     = {Automated Quality Assessment of Retrospective Histopathology whole-slide Image Cohorts by Artificial Intelligence: A Case Study for Prostate Cancer Research},
+  author    = {Maryam Haghighat, Lisa Browning, Korsuk Sirinukunwattana, Stefano Malacrino, Nasullah Khalid Alham, Richard Colling, Clare Verrill, and Jens Rittscher},
+  booktitle = {medRxiv},
+  year = {2021}
+}
+```
