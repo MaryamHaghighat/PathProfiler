@@ -12,6 +12,8 @@ from tempfile import mkdtemp
 from torchvision import transforms
 import torch
 from models_embedding import ResNet18
+import sys
+sys.path.append("../common")
 from wsi_reader import get_reader_impl
 import math
 

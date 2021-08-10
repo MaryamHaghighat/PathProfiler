@@ -5,6 +5,8 @@ from multiprocessing import Process, Queue
 from tempfile import TemporaryFile
 from PIL import Image
 from pathlib import Path
+import sys
+sys.path.append("../common")
 from wsi_reader import get_reader_impl
 
 

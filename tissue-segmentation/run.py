@@ -13,6 +13,8 @@ import csv
 from torch.utils.data import Dataset
 from torchvision import transforms
 from skimage.morphology import remove_small_objects
+import sys
+sys.path.append("../common")
 from wsi_reader import get_reader_impl
 import math
 

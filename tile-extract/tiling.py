@@ -4,6 +4,8 @@ import imageio
 import numpy as np
 import time
 import cv2
+import sys
+sys.path.append("../common")
 from wsi_reader import get_reader_impl
 import glob
 import matplotlib.pyplot as plt
