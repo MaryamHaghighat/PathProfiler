@@ -16,7 +16,6 @@ from skimage.morphology import remove_small_objects
 import sys
 sys.path.append("../common")
 from wsi_reader import get_reader_impl
-import math
 
 
 import argparse
@@ -138,11 +137,8 @@ class TilePrediction(object):
 
         wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
         level = int(np.log2(wsi_highest_magnification / args.mask_magnification))
-        try:
-            slide_level_dimensions = slide.level_dimensions[level]
-        except:
-            slide_level_dimensions = (int(math.ceil(slide.level_dimensions[0][0]/2**level)), int(math.ceil(slide.level_dimensions[0][1]/2**level)))
-        img, _ = slide.read_region((0, 0), level, slide_level_dimensions, normalize=False)
+        slide_level_dimensions = (int(round(slide.level_dimensions[0][0]/2**level)), int(round(slide.level_dimensions[0][1]/2**level)))
+        img, _ = slide.read_region((0, 0), level, slide_level_dimensions, downsample_best_level=True, normalize=False)
         img = self._pad_img(img)
 
         return img
