@@ -8,7 +8,6 @@ import pickle
 import pandas
 import matplotlib.pyplot as plt
 import glob
-from wsi_reader_org import get_reader_impl
 
 
 parser = argparse.ArgumentParser(description='Estimate WSI subjective scores')

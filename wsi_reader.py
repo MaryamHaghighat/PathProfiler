@@ -52,7 +52,8 @@ class WSIReader:
         y = max(y, 0)
         tile_w = width - x if (x + tile_w > width) else tile_w
         tile_h = height - y if (y + tile_h > height) else tile_h
-        tile, alfa_mask = self._read_region((x, y), 0 if downsample_level_0 else self.get_best_level_for_downsample(2**level) if downsample_best_level else level, (tile_w, tile_h))
+        tile, alfa_mask = self._read_region((x, y), 0 if downsample_level_0
+        else self.get_best_level_for_downsample(2**level) if downsample_best_level else level, (tile_w, tile_h))
         if (downsample_level_0 or downsample_best_level) and level > 0:
             tile_w = tile_w // downsample
             tile_h = tile_h // downsample
