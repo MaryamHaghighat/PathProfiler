@@ -108,7 +108,9 @@ Current model is trained and tested on the ProMPT cohort produced and scanned in
 
 ## Contact authors
 maryam.haghighat@eng.ox.ac.uk
+
 stefano.malacrino@nds.ox.ac.uk
+
 korsuk.sirinukunwattana@eng.ox.ac.uk
 
 ## License
