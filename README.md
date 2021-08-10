@@ -106,6 +106,12 @@ python quality-assessment/predict_slide_scores.py --quality_overlays_dir quality
 ## To do
 Current model is trained and tested on the ProMPT cohort produced and scanned in the Cellular Pathology Department at Oxford University Hospitals NHS Foundation Trust (OUHFT). To improve the model performance on other cohorts (e.g TCGA) we intend to incorporate images from different cohorts to the training process using semi-supervised techniques. However, a community effort is required to build a comprehensive quality assessment tool for histology slides and  validate results on other cohorts.
 
+## Contact authors
+maryam.haghighat@eng.ox.ac.uk
+
+stefano.malacrino@nds.ox.ac.uk
+
+korsuk.sirinukunwattana@eng.ox.ac.uk
 
 ## License
 © To be added - This code is available for non-commercial academic purposes.
@@ -117,7 +123,7 @@ This work is supported by the PathLAKE Centre of Excellence for digital patholog
 Please refer to our pre-print (http://) for detailed results.
 If you find our work useful in your research or if you use parts of this code please consider citing our paper:
 ```
-@inproceedings{DeepQC,
+@inproceedings{PathProfiler,
   title     = {Automated Quality Assessment of Retrospective Histopathology whole-slide Image Cohorts by Artificial Intelligence: A Case Study for Prostate Cancer Research},
   author    = {Maryam Haghighat, Lisa Browning, Korsuk Sirinukunwattana, Stefano Malacrino, Nasullah Khalid Alham, Richard Colling, Clare Verrill, and Jens Rittscher},
   booktitle = {medRxiv},
