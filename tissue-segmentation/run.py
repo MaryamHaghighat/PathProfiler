@@ -287,7 +287,7 @@ def main():
     # create model
     unet = UNet()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    net = nn.DataParallel(unet).cuda() if torch.cuda.is_available() else unet
+    net = nn.DataParallel(unet).cuda() if torch.cuda.is_available() else nn.DataParallel(unet)
     print(torch.cuda.is_available)
 
 
