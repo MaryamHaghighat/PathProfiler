@@ -16,7 +16,6 @@ import cv2
 import xml.etree.ElementTree as ET
 import re
 from fractions import Fraction
-from pathlib import Path
 
 class WSIReader:
     def close(self):
@@ -26,7 +25,7 @@ class WSIReader:
     def tile_dimensions(self):
         pass
         
-    def read_region(self, x_y, level, tile_size, normalize=True, downsample_level_0=False, downsample_best_level=False):
+    def read_region(self, x_y, level, tile_size, normalize=True, downsample_level_0=False):
         if isinstance(tile_size, int):
             tile_size = (tile_size, tile_size)
         x, y = x_y
@@ -34,14 +33,7 @@ class WSIReader:
             downsample = round(self.level_dimensions[0][0] / self.level_dimensions[level][0])
             x, y = x * downsample, y * downsample
             tile_w, tile_h = tile_size[0] * downsample, tile_size[1] * downsample
-            width, height = self.level_dimensions[0]
-            
-        elif downsample_best_level and level > 0:
-            best_level_for_downsample = self.get_best_level_for_downsample(2 ** level)
-            downsample = round(self.level_dimensions[best_level_for_downsample][0] / (self.level_dimensions[0][0]/2**level))
-            x, y = x * downsample, y * downsample
-            tile_w, tile_h = tile_size[0] * downsample, tile_size[1] * downsample
-            width, height = self.level_dimensions[best_level_for_downsample]
+            width, height = self.level_dimensions[0] 
         else:
             tile_w, tile_h = tile_size
             width, height = self.level_dimensions[level]
@@ -52,14 +44,14 @@ class WSIReader:
         y = max(y, 0)
         tile_w = width - x if (x + tile_w > width) else tile_w
         tile_h = height - y if (y + tile_h > height) else tile_h
-        tile, alfa_mask = self._read_region((x, y), 0 if downsample_level_0
-        else self.get_best_level_for_downsample(2**level) if downsample_best_level else level, (tile_w, tile_h))
-        if (downsample_level_0 or downsample_best_level) and level > 0:
+        
+        tile, alfa_mask = self._read_region((x,y), 0 if downsample_level_0 else level, (tile_w, tile_h))
+        if downsample_level_0 and level > 0:
             tile_w = tile_w // downsample
             tile_h = tile_h // downsample
             x = x // downsample
             y = y // downsample
-            tile = cv2.resize(tile.astype(np.uint8), (tile_w, tile_h), interpolation=cv2.INTER_CUBIC)
+            tile = cv2.resize(tile, (tile_w, tile_h), interpolation=cv2.INTER_CUBIC)
             alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), (tile_w, tile_h), interpolation=cv2.INTER_CUBIC).astype(np.bool)
         
         if normalize:
@@ -69,6 +61,21 @@ class WSIReader:
         tile = np.pad(tile, padding + [(0,0)]*(len(tile.shape)-2), 'constant', constant_values=0)
         alfa_mask = np.pad(alfa_mask, padding, 'constant', constant_values=0)
         
+        return tile, alfa_mask
+        
+    def read_region_ds(self, x_y, downsample, tile_size, normalize=True, downsample_level_0=False):
+        if isinstance(tile_size, int):
+            tile_size = (tile_size, tile_size)
+        level = self.get_best_level_for_downsample(downsample)
+        x_y_level = [round(coord * downsample / self.level_downsamples[level]) for coord in x_y]
+        tile_size_level = [round(dim * downsample / self.level_downsamples[level]) for dim in tile_size]
+        tile, alfa_mask = self.read_region(x_y_level, level, tile_size_level, False, downsample_level_0)
+        tile = cv2.resize(tile, tile_size, interpolation=cv2.INTER_CUBIC)
+        alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), tile_size, interpolation=cv2.INTER_CUBIC).astype(np.bool)
+        
+        if normalize:
+            tile = self._normalize(tile)
+            
         return tile, alfa_mask
 
     def _read_region(self, x_y, level, tile_size):
@@ -446,7 +453,6 @@ class IsyntaxReader(WSIReader):
         return self._level_downsamples
            
 def get_reader_impl(slide_path):
-    slide_path=Path(slide_path)
     if slide_path.suffix == '.isyntax':
         return IsyntaxReader
     else:
