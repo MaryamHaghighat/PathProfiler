@@ -66,10 +66,11 @@ class WSIReader:
     def read_region_ds(self, x_y, downsample, tile_size, normalize=True, downsample_level_0=False):
         if isinstance(tile_size, int):
             tile_size = (tile_size, tile_size)
-        level = self.get_best_level_for_downsample(downsample)
+            
+        level = 0 if downsample_level_0 else self.get_best_level_for_downsample(downsample)
         x_y_level = [round(coord * downsample / self.level_downsamples[level]) for coord in x_y]
         tile_size_level = [round(dim * downsample / self.level_downsamples[level]) for dim in tile_size]
-        tile, alfa_mask = self.read_region(x_y_level, level, tile_size_level, False, downsample_level_0)
+        tile, alfa_mask = self.read_region(x_y_level, level, tile_size_level, False, False)
         tile = cv2.resize(tile, tile_size, interpolation=cv2.INTER_CUBIC)
         alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), tile_size, interpolation=cv2.INTER_CUBIC).astype(np.bool)
         
@@ -376,7 +377,7 @@ class IsyntaxReader(WSIReader):
     def __init__(self, slide_path):
         self.slide_path = slide_path
         self._pe = PixelEngine(SoftwareRenderBackend(), SoftwareRenderContext())
-        self._pe['in'].open(slide_path)
+        self._pe['in'].open(str(slide_path), 'ficom')
         self._view = self._pe['in']['WSI'].source_view
         trunc_bits = {0: [0, 0, 0]}
         self._view.truncation(False, False, trunc_bits)
@@ -419,14 +420,10 @@ class IsyntaxReader(WSIReader):
         if not hasattr(self, '_level_dimensions'):
             self._level_dimensions = []
             for level in range(self.level_count):
-                x_start = self._view.dimension_ranges(level)[0][0]
-                x_step = self._view.dimension_ranges(level)[0][1]
-                x_end = self._view.dimension_ranges(level)[0][2]
-                y_start = self._view.dimension_ranges(level)[1][0]
-                y_step = self._view.dimension_ranges(level)[1][1]
-                y_end = self._view.dimension_ranges(level)[1][2]
-                range_x = ((x_end - x_start) // x_step) + 1
-                range_y = ((y_end - y_start) // y_step) + 1
+                x_step, x_end = self._view.dimension_ranges(level)[0][1:]
+                y_step, y_end = self._view.dimension_ranges(level)[1][1:]
+                range_x = (x_end + 1) // x_step
+                range_y = (y_end + 1) // y_step
                 self._level_dimensions.append((range_x, range_y))
         return self._level_dimensions
         
