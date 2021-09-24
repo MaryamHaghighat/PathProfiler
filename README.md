@@ -15,7 +15,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--slide_id`:  slide filename (or "*" for all slides)
 * `--save_folder`:  path to save results
 * `--mask_magnification`:  magnification power of generated tissue masks. It is recommended to use 1.25 or 2.5.
-* `--mpp_level0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
+* `--mpp_level_0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
 ===================================================
 ###  Tile extraction
@@ -30,7 +30,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--stride`:  stride; the default is 256
 * `--mask_dir`:  path to save tissue masks 
 * `--mask_ratio`:  the minimum acceptable masked area (available tissue) to extract tile
-* `--mpp_level0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
+* `--mpp_level_0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
 ===================================================
 ### Quality assessment 
@@ -57,9 +57,10 @@ To start quality assessment tool, run:
 **python quality-assessment/run.py** by passing the following arguments:
 * `--slide_dir`:  path to slides
 * `--slide_id`:  slide filename or "*" for going through all slides.
-* `--mpp_level0`: manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
+* `--mpp_level_0`: manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 * `--mask_dir`: path to tissue mask folder (the output folder of tissue segmentation step)
 * `--mask_magnification`: the magnification power of tissue masks 
+* `--overlay_magnification`: the magnification power of generated quality overlays (heatmaps) 
 * `--mask_ratio`: the minimum ratio of masked area (tissue) in an image tile to proceed tile processing
 * `--save_folder`: folder path to save results. 
 Quality overlays are collected in a dictionary and saved as **slide_name.npy** with key values as below:
@@ -73,7 +74,7 @@ Quality overlays are collected in a dictionary and saved as **slide_name.npy** w
 **Notes:**
 - the pixel size of quality overlays saved in "slide_name.npy" is (slide_size_at_5X) / 256.
 - each pixel value in the quality overlay represents quality prediction value for a tile of  256*256. 
-- quality overlays can be easily regenerated at magnification "X" by: 
+- quality overlays can be easily regenerated from "slide_name.npy" at magnification "X" by: 
 
 `overlay at magnification X = overlay.repeat(X*256/5, axis=0).repeat(X*256/5, axis=1)`
 
@@ -89,18 +90,23 @@ To map the quality overlays to standard slide-level scores, run:
 
 Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 histology slides of prostate cancer collated between 2001-2018 as part of a UK-based observational study. While the model has not been trained or validated on external cohorts, we estimated quality overlays for WSIs in TCGA-prostate and FOCUS datasets  ([here](https://drive.google.com/drive/folders/1D9fIt67dBxaOqWcOXYpZWiKaYGhAXwZu?usp=sharing)) for further community investigation. Estimated  standard WSI quality scores for TCGA ([here](https://drive.google.com/file/d/1Kuz1TOQ_HHFKdeuV1bNpTAl58EDLXXM1/view?usp=sharing)) and tumor regions of FOCUS slides ([here](https://drive.google.com/file/d/1emvYNkmCuCjdDvUQOH6W4zdgOUEoLNVG/view?usp=sharing)) are also provided . With the help of community to  collect various artefacts in different tissue types, we believe the model performance will improve for external cohorts and hence this work can be extended to a comprehensive and clinically relevant quality assessment tool. 
 
-### Examples (run the pipeline on TCGA slides)
+### Examples 
+####run the pipeline on TCGA slides
 1- Tissue segmentation
 ``` shell
-python tissue-segmentation/run.py --save_folder ../tissue-masks/TCGA --slide_dir TCGA_slides_Directory --mask_magnification 1.25 --mpp_level0 .25
+python tissue-segmentation/run.py --save_folder '../tissue-masks/TCGA' --slide_dir 'TCGA_slides_Directory' --mask_magnification 1.25 --model 'checkpoint_147800.pth'
 ```
 2- Generate quality overlays:
 ``` shell
-python quality-assessment/run.py --slide_dir TCGA_slides_Directory --mask_dir ../tissue-masks/TCGA --mask_magnification 1.25 --mask_ratio .2 --mpp_level0 .25 --save_folder quality-overlays/TCGA
+python quality-assessment/run.py --slide_dir 'TCGA_slides_Directory' --mask_dir 'tissue-masks/TCGA' --mask_magnification 1.25 --save_folder 'quality-assessment/quality-overlays/TCGA' --model 'checkpoint_106.pth' --slide_id '*.svs'
 ```
 3- Predict slide-level scores
 ``` shell
-python quality-assessment/predict_slide_scores.py --quality_overlays_dir quality-overlays/TCGA --slide_scores_filename TCGA_slide_scores.csv
+python quality-assessment/predict_slide_scores.py --quality_overlays_dir quality-assessment/quality-overlays/TCGA --slide_scores_filename TCGA_slide_scores.csv
+```
+#### Extract tiles from TCGA slides
+``` shell
+python tile-extract/tiling.py --save_folder './tiles' --slide_dir 'TCGA_slides_Directory' --mask_magnification 1.25  --mask_dir 'tissue-masks/TCGA'  --slide_id '*.svs'
 ```
 
 ## To do
@@ -114,7 +120,7 @@ stefano.malacrino@nds.ox.ac.uk
 korsuk.sirinukunwattana@eng.ox.ac.uk
 
 ## License
-© To be added - This code is available for non-commercial academic purposes.
+This code is made available under the GPLv3 License.
 
 ## Funding
 This work is supported by the PathLAKE Centre of Excellence for digital pathology and AI which is funded, managed and delivered by Innovate UK on behalf of UK Research and Innovation (UKRI). 

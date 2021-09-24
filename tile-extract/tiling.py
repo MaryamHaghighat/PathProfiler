@@ -5,7 +5,7 @@ import numpy as np
 import time
 import cv2
 import sys
-sys.path.append("../common")
+sys.path.append("common")
 from wsi_reader import get_reader_impl
 import glob
 import matplotlib.pyplot as plt
@@ -15,16 +15,15 @@ import random
 parser = argparse.ArgumentParser(description='Extract tiles from WSIs')
 parser.add_argument('--slide_dir', default='path to WSIs dir', type=str)
 parser.add_argument('--slide_id', default='*', type=str, help='slide filename (or "*" for all slides)')
-parser.add_argument('--save_folder', type=str, default='../tiles', help='path to a folder to save results')
+parser.add_argument('--save_folder', type=str, default='tiles', help='path to a folder to save results')
 parser.add_argument('--tile_magnification', type=float, default=10)
 parser.add_argument('--mask_magnification', type=float, default=2.5)
 parser.add_argument('--tile_size', type=int, default=256)
 parser.add_argument('--stride', type=int, default=256)
-parser.add_argument('--mask_dir', default='path to tissue mask folder')
+parser.add_argument('--mask_dir', default='path to tissue mask folder', type=str)
 parser.add_argument('--mask_ratio', type=float, default=0.2)
-parser.add_argument('--mpp_level0', type=float, default=None, help='manually enter mpp at level 0 if not readable from slides')
-
-
+parser.add_argument('--mpp_level_0', type=float, default=None, help='manually enter mpp at level 0 if not readable from slides')
+args = parser.parse_args()
 
 
 def tiling(wsi_filename,
@@ -45,7 +44,6 @@ def tiling(wsi_filename,
     :param mask_magnification: the magnification at which masks are generated. The default is 2.5
     :param mask_ratio: minimum acceptable ratio of masked area. The default is 0.2
     '''
-
     t = time.time()
 
     #############################################################
@@ -75,39 +73,37 @@ def tiling(wsi_filename,
     reader = get_reader_impl(wsi_filename)
     slide = reader(wsi_filename)
 
-    if args.mpp_level0:
-        print('slides mpp manually set to', args.mpp_level0)
-        mpp=args.mpp_level0
+    if args.mpp_level_0:
+        print('slides mpp manually set to', args.mpp_level_0)
+        mpp=args.mpp_level_0
     else:
         try:
-            mpp = slide.mpp['MPP']
-            print(mpp)
+            mpp = slide.mpp[0]
         except:
-            print('slide mpp is not available as "slide.mpp"\n use --mpp_level0 to enter mpp at level 0 manually.')
+            print('slide mpp is not available as "slide.mpp"\n use --mpp_level_0 to enter mpp at level 0 manually.')
+            return
 
     wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
 
     #############################################################
 
-    level = int(np.log2(wsi_highest_magnification / tile_magnification))
-    print('level', level)
+    downsample = wsi_highest_magnification / tile_magnification
+
     ###########################################################################################
-#    ncol, nrow = slide.level_dimensions[level]
-    ncol, nrow = int(slide.level_dimensions[0][0]/2**level), int(slide.level_dimensions[0][1]/2**level)
+    ncol, nrow = int(slide.level_dimensions[0][0]/downsample), int(slide.level_dimensions[0][1]/downsample)
 
     for x in range(0, ncol, stride):
         for y in range(0, nrow, stride):
-
             if mask_dir:
                 crop_mask = mask[int(y / mask_downsample): mask_tile_size + int(y / mask_downsample),
                 int(x / mask_downsample): mask_tile_size + int(x / mask_downsample)]
-                if (crop_mask.mean() < mask_ratio): #or (random.randrange(0,100)>5):
+                if crop_mask.mean() < mask_ratio:
                     continue
 
             savename = os.path.join(save_location, slideID + f'_obj_{wsi_highest_magnification}x_{tile_magnification}x_x_{x}_y_{y}.png')
             if not os.path.exists(savename):
                 try:
-                    crop_img, _ = slide.read_region((x, y), level, (tile_size, tile_size), downsample_level_0=True, normalize=False)
+                    crop_img, _ = slide.read_region_ds((x, y), downsample, (tile_size, tile_size), downsample_level_0=True, normalize=False)
                 except:
                     slide = reader(wsi_filename)
                     continue
@@ -120,6 +116,7 @@ def tiling(wsi_filename,
 if __name__ == "__main__":
 
     wsi_filenames = glob.glob(os.path.join(args.slide_dir, args.slide_id))
+    print(wsi_filenames)
 
     for filename in wsi_filenames:
         tiling(wsi_filename=filename,

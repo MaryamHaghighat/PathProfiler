@@ -2,7 +2,7 @@ try:
     import openslide
     import tifffile
 except:
-    pass    
+    pass
 
 try:
     from pixelengine import PixelEngine
@@ -11,7 +11,8 @@ try:
 except:
     pass
     
-import numpy as np    
+import numpy as np
+from pathlib import Path
 import cv2
 import xml.etree.ElementTree as ET
 import re
@@ -33,7 +34,7 @@ class WSIReader:
             downsample = round(self.level_dimensions[0][0] / self.level_dimensions[level][0])
             x, y = x * downsample, y * downsample
             tile_w, tile_h = tile_size[0] * downsample, tile_size[1] * downsample
-            width, height = self.level_dimensions[0] 
+            width, height = self.level_dimensions[0]
         else:
             tile_w, tile_h = tile_size
             width, height = self.level_dimensions[level]
@@ -76,13 +77,12 @@ class WSIReader:
         
         if normalize:
             tile = self._normalize(tile)
-            
         return tile, alfa_mask
 
     def _read_region(self, x_y, level, tile_size):
         pass
         
-    def get_best_level_for_downsample(self, downsample):        
+    def get_best_level_for_downsample(self, downsample):
         if downsample < self.level_downsamples[0]:
             return 0
 
@@ -106,7 +106,7 @@ class WSIReader:
         
     @property
     def level_count(self):
-        pass  
+        pass
         
     @property
     def mpp(self):
@@ -131,7 +131,7 @@ class WSIReader:
                 self._level_downsamples.append(ds)
         return self._level_downsamples
              
-    @staticmethod 
+    @staticmethod
     def _normalize(pixels):
         if np.issubdtype(pixels.dtype, np.integer):
             pixels = (pixels / 255).astype(np.float32)
@@ -177,7 +177,7 @@ class OpenSlideReader(WSIReader):
     def dtype(self):
         return np.dtype(np.uint8)
        
-    @property 
+    @property
     def n_channels(self):
         return 3
         
@@ -194,7 +194,8 @@ class OpenSlideReader(WSIReader):
                 tile_height = self._slide.properties[f'openslide.level[{level}].tile-height']
                 self._tile_dimensions.append((tilewidth, tilelength))
         return self._tile_dimensions
-        
+    
+    
 class TiffReader(WSIReader):
     def __init__(self, slide_path, series=0):
         self.slide_path = slide_path
@@ -325,7 +326,7 @@ class TiffReader(WSIReader):
         tile, alfa_mask = self._get_alfa_mask(tile, page.samplesperpixel, page.extrasamples)
         return tile, alfa_mask
        
-    @property 
+    @property
     def level_dimensions(self):
         if not hasattr(self, '_level_dimensions'):
             self._level_dimensions = []
@@ -334,7 +335,7 @@ class TiffReader(WSIReader):
                 self._level_dimensions.append((page.imagewidth, page.imagelength))
         return self._level_dimensions
     
-    @property    
+    @property
     def level_count(self):
         return len(self._reader.series[self.series].levels)
         
@@ -363,7 +364,7 @@ class TiffReader(WSIReader):
                                  1e4/float(Fraction(*page.tags['YResolution'].value)))
         return self._mpp
     
-    @property    
+    @property
     def dtype(self):
         return self._reader.series[self.series].levels[0].pages[0].dtype
     
@@ -450,7 +451,7 @@ class IsyntaxReader(WSIReader):
         return self._level_downsamples
            
 def get_reader_impl(slide_path):
-    if slide_path.suffix == '.isyntax':
+    if Path(slide_path).suffix == '.isyntax':
         return IsyntaxReader
     else:
         return TiffReader

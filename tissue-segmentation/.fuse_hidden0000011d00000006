@@ -279,19 +279,24 @@ def main():
     #############################################################
     # sanity check
     assert args.mask_magnification in [2.5, 1.25], "tile_magnification should either be either 2.5 or 1.25"
-    assert os.path.isfile(args.model), "=> no checkpoint found at '{}'".format(args.model)
     #############################################################
 
     # create model
     unet = UNet()
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     net = nn.DataParallel(unet).cuda() if torch.cuda.is_available() else nn.DataParallel(unet)
-    print("=> loading checkpoint '{}'".format(args.model))
-    checkpoint = torch.load(args.model, map_location=device)
-    net.load_state_dict(checkpoint['state_dict'])
-    print("=> loaded checkpoint '{}' (epoch {})"
-          .format(args.model, checkpoint['epoch']))
+    print(torch.cuda.is_available)
 
+    if os.path.isfile(args.model):
+        print("=> loading checkpoint '{}'".format(args.model))
+        checkpoint = torch.load(args.model, map_location=device)
+        net.load_state_dict(checkpoint['state_dict'])
+
+        print("=> loaded checkpoint '{}' (epoch {})"
+              .format(args.model, checkpoint['epoch']))
+    else:
+        print("=> no checkpoint found at '{}'".format(args.model))
+        return
     net.eval()
     predictor = TilePrediction(patch_size=args.tile_size,
                                subdivisions=2.0,
@@ -306,7 +311,7 @@ def main():
         savename = os.path.join(args.save_folder, basename + '.jpg')
 
         if not os.path.exists(savename):
-            print('Processing', slide)
+            print(slide)
             try:
                 segmentation = predictor.run(slide)
                 segmentation = remove_small_objects(segmentation == 255, 50**2)
