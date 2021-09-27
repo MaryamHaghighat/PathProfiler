@@ -130,8 +130,11 @@ Please refer to our pre-print (http://) for detailed results.
 If you find our work useful in your research or if you use parts of this code please consider citing our paper:
 ```
 @inproceedings{PathProfiler,
-  title     = {Automated Quality Assessment of Retrospective Histopathology whole-slide Image Cohorts by Artificial Intelligence: A Case Study for Prostate Cancer Research},
-  author    = {Maryam Haghighat, Lisa Browning, Korsuk Sirinukunwattana, Stefano Malacrino, Nasullah Khalid Alham, Richard Colling, Clare Verrill, and Jens Rittscher},
+  title     = {PathProfiler: Automated Quality Assessment of
+Retrospective Histopathology Whole-Slide Image
+Cohorts by Artificial Intelligence – A Case Study for
+Prostate Cancer Research},
+  author    = {Maryam Haghighat, Lisa Browning, Korsuk Sirinukunwattana, Stefano Malacrino, Nasullah Khalid Alham, Richard Colling, Ying Cui, Emad Rakha, Freddie C. Hamdy, Clare Verrill, and Jens Rittscher},
   booktitle = {medRxiv},
   year = {2021}
 }
