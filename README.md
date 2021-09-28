@@ -1,4 +1,4 @@
-Quality Assessment of Retrospective Histopathology Whole-Slide Image Cohorts
+PathProfiler: Quality Assessment of Histopathology Whole-Slide Image Cohorts
 ===================================================
 
 In this study, a quality assessment pipeline is  proposed in which possible multiple artefacts are predicted in a same region along with diagnostic usability of the image. 
