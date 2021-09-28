@@ -129,13 +129,15 @@ This work is supported by the PathLAKE Centre of Excellence for digital patholog
 Please refer to our pre-print (http://) for detailed results.
 If you find our work useful in your research or if you use parts of this code please consider citing our paper:
 ```
-@inproceedings{PathProfiler,
-  title     = {PathProfiler: Automated Quality Assessment of
-Retrospective Histopathology Whole-Slide Image
-Cohorts by Artificial Intelligence – A Case Study for
-Prostate Cancer Research},
-  author    = {Maryam Haghighat, Lisa Browning, Korsuk Sirinukunwattana, Stefano Malacrino, Nasullah Khalid Alham, Richard Colling, Ying Cui, Emad Rakha, Freddie C. Hamdy, Clare Verrill, and Jens Rittscher},
-  booktitle = {medRxiv},
-  year = {2021}
+@article {Haghighat_PathProfiler,
+	author = {Haghighat, Maryam and Browning, Lisa and Sirinukunwattana, Korsuk and Malacrino, Stefano and Alham, Nasullah Khalid and Colling, Richard and Cui, Ying and Rakha, Emad and Hamdy, Freddie and Verrill, Clare and Rittscher, Jens},
+	title = {PathProfiler: Automated Quality Assessment of Retrospective Histopathology Whole-Slide Image Cohorts by Artificial Intelligence, A Case Study for Prostate Cancer Research},
+	elocation-id = {2021.09.24.21263762},
+	year = {2021},
+	doi = {10.1101/2021.09.24.21263762},
+	publisher = {Cold Spring Harbor Laboratory Press},
+	URL = {https://www.medrxiv.org/content/early/2021/09/27/2021.09.24.21263762},
+	eprint = {https://www.medrxiv.org/content/early/2021/09/27/2021.09.24.21263762.full.pdf},
+	journal = {medRxiv}
 }
 ```
