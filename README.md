@@ -94,7 +94,7 @@ Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 h
 ####run the pipeline on TCGA slides
 1- Tissue segmentation
 ``` shell
-python tissue-segmentation/run.py --save_folder '../tissue-masks/TCGA' --slide_dir 'TCGA_slides_Directory' --mask_magnification 1.25 --model 'checkpoint_147800.pth'
+python tissue-segmentation/run.py --save_folder 'tissue-masks/TCGA' --slide_dir 'TCGA_slides_Directory' --mask_magnification 1.25 --model 'checkpoint_147800.pth'
 ```
 2- Generate quality overlays:
 ``` shell
@@ -106,7 +106,7 @@ python quality-assessment/predict_slide_scores.py --quality_overlays_dir quality
 ```
 #### Extract tiles from TCGA slides
 ``` shell
-python tile-extract/tiling.py --save_folder './tiles' --slide_dir 'TCGA_slides_Directory' --mask_magnification 1.25  --mask_dir 'tissue-masks/TCGA'  --slide_id '*.svs'
+python tile-extract/tiling.py --save_folder 'tiles' --slide_dir 'TCGA_slides_Directory' --mask_magnification 1.25  --mask_dir 'tissue-masks/TCGA'  --slide_id '*.svs'
 ```
 
 ## To do
