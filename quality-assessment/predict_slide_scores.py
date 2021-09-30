@@ -53,16 +53,6 @@ def main():
                 mask = cv2.imread(mask_path, -1)
                 mask = cv2.resize(mask, (usblty.shape[1], usblty.shape[0]), fx=0, fy=0,
                                  interpolation=cv2.INTER_NEAREST)
-                # mask = cv2.resize(mask, (int(mask.shape[1] / 64), int(mask.shape[0] / 64)), fx=0, fy=0,
-                #                  interpolation=cv2.INTER_NEAREST)
-                # add_mask(usblty, mask)
-                # add_mask(normal, mask)
-                # add_mask(focus_artfcts, mask)
-                # add_mask(stain_artfcts, mask)
-                # add_mask(folding_artfcts, mask)
-                # add_mask(other_artfcts, mask)
-                # add_mask(processed_region, mask)
-
                 usblty[mask < 1] = 0
                 normal[mask < 1] = 0
                 focus_artfcts[mask < 1] = 0
