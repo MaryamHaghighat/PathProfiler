@@ -116,8 +116,6 @@ def tiling(wsi_filename,
 if __name__ == "__main__":
 
     wsi_filenames = glob.glob(os.path.join(args.slide_dir, args.slide_id))
-    print(wsi_filenames)
-
     for filename in wsi_filenames:
         tiling(wsi_filename=filename,
                save_folder=args.save_folder,
