@@ -126,7 +126,7 @@ This code is made available under the GPLv3 License.
 This work is supported by the PathLAKE Centre of Excellence for digital pathology and AI which is funded, managed and delivered by Innovate UK on behalf of UK Research and Innovation (UKRI). 
 
 ## Reference
-Please refer to our pre-print (http://) for detailed results.
+Please refer to our pre-print (https://www.medrxiv.org/content/10.1101/2021.09.24.21263762v1) for detailed results.
 If you find our work useful in your research or if you use parts of this code please consider citing our paper:
 ```
 @article {Haghighat_PathProfiler,
