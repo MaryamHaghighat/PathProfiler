@@ -1,11 +1,11 @@
 import sys
-sys.path.append("common")
-from wsi_reader import get_reader_impl
+sys.path.extend(["../.", "."])
+from common.wsi_reader import get_reader_impl
+from common.tile_processing_parallel import process_tiles
+from common.models import ResNet18
 import glob
 import os
 import numpy as np
-import matplotlib.pyplot as plt
-from tile_processing_parallel import process_tiles
 import argparse
 import cv2
 import csv
@@ -14,34 +14,31 @@ import os.path as path
 from tempfile import mkdtemp
 from torchvision import transforms
 import torch
-from trainer.models import ResNet18
-import math
 from matplotlib import cm
 
 
 '''
 Tile-level quality assessment of whole slides using pretrained model: "checkpoint_106.pth"
-output: saves quality overlays and the processed region in a .npy file as:
+output: saves quality overlays and the processed region in a npy file as:
 slide_info = {'focus_artfcts': focus_artfcts, 'stain_artfcts': stain_artfcts,
 'normal': normal, 'other_artfcts': other_artfcts, 'folding_artfcts': folding_artfcts,
 'usblty': usblty, 'processed_region': processed_region}
 
-Note: The pixel size of quality overlays is slide_size_at_5X / tile_size
-Heatmaps can be saved at a given magnification
+Note: The pixel size of quality overlays is slide_size_at_5X / tile_size, however, they can be saved at 
+a given magnification with param "overlay_magnification"
 '''
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--slide_dir', default='path to slide dir', type=str)
+parser.add_argument('--slide_dir', default='WSIs', help='path to slides dir', type=str, required=True)
 parser.add_argument('--slide_id', default='*', type=str, help='slide filename ("*" for all slides)')
 parser.add_argument('--mpp_level_0', type=float, default=None, help='manually enter mpp at level 0 if not readable from slides')
-parser.add_argument('--mask_dir', default='../tissue-masks', help='path to tissue mask folder')
+parser.add_argument('--mask_dir', default='tissue-masks', help='path to tissue mask folder')
 parser.add_argument('--tile_size', type=int, default=256, help='our model is trained with images size 256')
-parser.add_argument('--mask_magnification', type=float, default=2.5)
+parser.add_argument('--mask_magnification', type=float, default=1.25)
 parser.add_argument('--mask_ratio', type=float, default=0.2)
 parser.add_argument('--workers', type=int, default=8)
 parser.add_argument('--model', default='checkpoint_106.pth', type=str)
 parser.add_argument('--overlay_magnification', default=1.25, type=float)
-
 parser.add_argument('--save_folder', default='quality-overlays', type=str, help='path to the folder to save results')
 args = parser.parse_args()
 
@@ -57,9 +54,8 @@ def eval_quality(tile, x_y, QA_model, usblty, normal, focus_artfcts, stain_artfc
     with torch.no_grad():
         QA_model.eval()
     out = QA_model.embedding(tile.unsqueeze(0)).squeeze(0).cpu()
-    out[out > 1] = 1
-    out[out < 0] = 0
-    out = out.data.numpy()
+    out = out.data.numpy().clip(0, 1)
+
     usblty[nrow, ncol] = out[0]
     normal[nrow, ncol] = out[1]
     stain_artfcts[nrow, ncol] = out[2]
@@ -73,7 +69,7 @@ def generate_heatmap(overlay, processed_region, heatmap_mag):
     cmap = cm.get_cmap('bwr')
     heatmap = cmap(overlay)
     heatmap = (heatmap * 255).astype(np.uint8)
-    heatmap[processed_region==0] = 128
+    heatmap[processed_region == 0] = 128
     heatmap=heatmap.repeat(int(heatmap_mag*256/5.), axis=0).repeat(int(heatmap_mag*256/5.), axis=1)
     return heatmap
 
@@ -82,7 +78,7 @@ def main():
 
     #############################################################
     # sanity check
-    assert os.path.isfile(args.model), "=> no checkpoint found at '{}'".format(args.model)
+    assert path.isfile(args.model), "=> no checkpoint found at '{}'".format(args.model)
     #############################################################
 
     # define network
@@ -109,7 +105,6 @@ def main():
     for filename in dir_list:
         start = timeit.default_timer()
         basename = path.basename(filename)
-        print('Processing', basename)
         slide_name = path.splitext(basename)[0]
         reader = get_reader_impl(filename)
         if path.exists(path.join(args.save_folder,  slide_name + '_quality_overlays.npy')):
@@ -137,7 +132,7 @@ def main():
             except:
                 print('slide mpp is not available as "slide.mpp"\n use --mpp_level_0 to enter mpp at level 0 manually.')
                 continue
-
+        print('Processing', basename)
         wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
         downsample = wsi_highest_magnification / 5.  # Model is trained for tiles at 5X
         w, h = int(np.round(slide.level_dimensions[0][0]/downsample)), int(np.round(slide.level_dimensions[0][1]/downsample))
@@ -149,7 +144,7 @@ def main():
         folding_artfcts = np.memmap(tmp_folding_artfcts_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
         usblty = np.memmap(tmp_usblty_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
         processed_region = np.memmap(tmp_processed_region_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        process_tiles(filename, args.tile_size, downsample, mask_path, args.mask_magnification, args.mask_ratio,
+        process_tiles(filename, args.tile_size, 5.0, args.tile_size, downsample, True, mask_path, args.mask_magnification, args.mask_ratio,
                       eval_quality, QA_model, usblty, normal, focus_artfcts, stain_artfcts,
                       other_artfcts, folding_artfcts, processed_region, n_workers=args.workers)
         slide_info = {'focus_artfcts': focus_artfcts, 'stain_artfcts': stain_artfcts, 'normal': normal,

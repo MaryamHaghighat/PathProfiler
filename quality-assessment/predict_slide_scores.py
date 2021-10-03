@@ -17,15 +17,6 @@ parser.add_argument('--slide_scores_filename', default='slide_scores.csv', type=
 args = parser.parse_args()
 
 
-def add_mask(img, mask):
-    for i in range(0, mask.shape[0]):
-        for j in range(0, mask.shape[1]):
-            try:
-                img[i, j] = (img[i, j] * int(mask[i, j]/255.))
-            except:
-                continue
-
-
 def main():
     pred_usblty=list()
     pred_focus = list()
@@ -33,9 +24,9 @@ def main():
     qc_filename_list = glob.glob(os.path.join(args.quality_overlays_dir, '*.npy'))
     comments= len(qc_filename_list)*['']
     dist_list_sum = np.zeros((1,7)).astype(np.float)
-    focus_model = pickle.load(open('model_focus_score.pkl', 'rb'))
-    usblty_model = pickle.load(open('model_usblty_score.pkl', 'rb'))
-    stain_model = pickle.load(open('model_stain_score.pkl', 'rb'))
+    focus_model = pickle.load(open('quality-assessment/model_focus_score.pkl', 'rb'))
+    usblty_model = pickle.load(open('quality-assessment/model_usblty_score.pkl', 'rb'))
+    stain_model = pickle.load(open('quality-assessment/model_stain_score.pkl', 'rb'))
     for i, npy_path in enumerate(qc_filename_list):
         slide_info_loaded = np.array(np.load(npy_path, allow_pickle=True))
         usblty = np.array(slide_info_loaded[()]['usblty'])
@@ -51,8 +42,7 @@ def main():
                 mask_path = os.path.join(args.tumor_mask_dir,
                                          Path(npy_path).stem.replace('_quality_overlays', '')+'.png')
                 mask = cv2.imread(mask_path, -1)
-                mask = cv2.resize(mask, (usblty.shape[1], usblty.shape[0]), fx=0, fy=0,
-                                 interpolation=cv2.INTER_NEAREST)
+                mask = cv2.resize(mask, (usblty.shape[1], usblty.shape[0]), fx=0, fy=0, interpolation=cv2.INTER_NEAREST)
                 usblty[mask < 1] = 0
                 normal[mask < 1] = 0
                 focus_artfcts[mask < 1] = 0
@@ -68,7 +58,7 @@ def main():
                 comments[i] = 'No tumor mask'
                 continue
 
-        if processed_region.sum()==0:
+        if processed_region.sum() == 0:
             print('zero tissue mask:', npy_path)
             pred_usblty.extend([0.])
             pred_stain.extend(['NA'])
@@ -80,13 +70,12 @@ def main():
             continue
 
         dist_list_s = np.array([usblty[processed_region > 0].sum(),
-                   normal[processed_region > 0].sum(),
-                   focus_artfcts[processed_region > 0].sum(),
-                   stain_artfcts[processed_region > 0].sum(),
-                   folding_artfcts[processed_region > 0].sum(),
-                   other_artfcts[processed_region > 0].sum(),
-                   processed_region[processed_region > 0].sum()
-                    ])
+                                normal[processed_region > 0].sum(),
+                                focus_artfcts[processed_region > 0].sum(),
+                                stain_artfcts[processed_region > 0].sum(),
+                                folding_artfcts[processed_region > 0].sum(),
+                                other_artfcts[processed_region > 0].sum(),
+                                processed_region[processed_region > 0].sum()])
         dist_list_sum = dist_list_sum + dist_list_s
         fa = focus_artfcts[processed_region > 0]
         sa = stain_artfcts[processed_region > 0]
@@ -111,15 +100,17 @@ def main():
         pred_stain.extend(np.clip(np.round(stain_model.predict([feats_stain])), 0, 10))
 
     print('average tile scores:', dist_list_sum/dist_list_sum[0, -1])
-    with open(args.slide_scores_filename, 'w', ) as myfile:
+    with open(args.slide_scores_filename, 'w') as myfile:
         wr = csv.writer(myfile)
         wr.writerow(['slide_id', 'usability_score', 'focus_score', 'staining_score', 'comments'])
         for i, npy_file in enumerate(qc_filename_list):
-            slide_id=(os.path.basename(npy_file)).replace('_quality_overlays.npy', '')
-            wr.writerow([slide_id, pred_usblty[i], pred_focus[i], pred_stain[i], comments[i] ])
+            slide_id = (os.path.basename(npy_file)).replace('_quality_overlays.npy', '')
+            wr.writerow([slide_id, pred_usblty[i], pred_focus[i], pred_stain[i], comments[i]])
 
         bin_pred_usabilty = [item for item in pred_usblty if not item == 'NA']
         bin_pred_usabilty = [0 if item < .5 else 1 for item in bin_pred_usabilty]
+        print('Percentage of usable slides (cut off at 0.5):', 100*np.mean(bin_pred_usabilty))
+
 
 if __name__ == "__main__":
     main()

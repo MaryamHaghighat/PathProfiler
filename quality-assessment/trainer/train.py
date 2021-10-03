@@ -1,3 +1,7 @@
+import sys
+sys.path.append("common")
+from datasets import Data, TestData, LabelSampler
+from models import modelIQA
 import torch
 import csv
 import numpy as np
@@ -7,8 +11,7 @@ import argparse
 import os
 import torch.backends.cudnn as cudnn
 import cv2
-from datasets import Data, TestData, LabelSampler
-from models import modelIQA
+
 
 ''' Train a multi-label ResNet18 model with six quality-related outputs: 
 1- usability, 2- no artefact, 3- staining issues, 4- out-of-focus, 5- folding and 6- other artefacts.
@@ -64,7 +67,6 @@ def main():
     train_dataset = Data(X_train, y_train, args.rand_margin)
     val_dataset = TestData(X_test_val, y_test_val)
     train_sampler = LabelSampler(train_dataset, batch_size=args.batch_size, weights=[.2, .1, .1, .06, .08, .2, .2, 0.06])
-
     kwargs = {'num_workers': args.num_workers, 'shuffle': False, 'pin_memory': True}
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_sampler=train_sampler,
                                                worker_init_fn=worker_init_fn, **kwargs)
@@ -93,6 +95,7 @@ def main():
     v_f1_micro_meter.reset()
     t_f1_macro_meter.reset()
     v_f1_macro_meter.reset()
+    
     # create training_report.csv to save the evaluation metrics
     report_file = os.path.join(args.checkpoint_folder, 'training_report.csv')
     if not args.resume:

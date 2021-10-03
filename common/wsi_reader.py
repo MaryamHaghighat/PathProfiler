@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 import re
 from fractions import Fraction
 
+
 class WSIReader:
     def close(self):
         pass
@@ -45,7 +46,6 @@ class WSIReader:
         y = max(y, 0)
         tile_w = width - x if (x + tile_w > width) else tile_w
         tile_h = height - y if (y + tile_h > height) else tile_h
-        
         tile, alfa_mask = self._read_region((x,y), 0 if downsample_level_0 else level, (tile_w, tile_h))
         if downsample_level_0 and level > 0:
             tile_w = tile_w // downsample
@@ -453,6 +453,7 @@ class IsyntaxReader(WSIReader):
 def get_reader_impl(slide_path):
     if Path(slide_path).suffix == '.isyntax':
         return IsyntaxReader
+    elif Path(slide_path).suffix == '.ndpi':
+        return OpenSlideReader
     else:
         return TiffReader
-            

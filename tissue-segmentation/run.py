@@ -1,3 +1,6 @@
+import sys
+sys.path.extend(["../.", "."])
+from common.wsi_reader import get_reader_impl
 import os
 import gc
 import cv2
@@ -9,21 +12,18 @@ import torch.nn as nn
 import glob
 import scipy.signal
 from unet import UNet
-import csv
 from torch.utils.data import Dataset
 from torchvision import transforms
 from skimage.morphology import remove_small_objects
-import sys
-sys.path.append("../common")
-from wsi_reader import get_reader_impl
 import argparse
 
+
 parser = argparse.ArgumentParser()
-parser.add_argument('--save_folder', default='path to save results', type=str)
-parser.add_argument('--slide_dir', default='path to WSIs dir', type=str)
+parser.add_argument('--slide_dir', help='path to WSIs dir', type=str, required=True)
 parser.add_argument('--slide_id', default='*', type=str, help='slide filename ("*" for all slides)')
-parser.add_argument('--model', default=os.path.join('checkpoint_147800.pth'), type=str)
-parser.add_argument('--mask_magnification', default=2.5, type=float)
+parser.add_argument('--save_folder', default='tissue-masks', help='path to save results', type=str)
+parser.add_argument('--model', default='tissue-segmentation/checkpoint_147800.pth', type=str)
+parser.add_argument('--mask_magnification', default=1.25, type=float)
 parser.add_argument('--mpp_level_0', default=None, type=float)
 parser.add_argument('--gpu_id', default='0', type=str)
 parser.add_argument('--tile_size', default=512, type=int)
@@ -278,7 +278,7 @@ def main():
 
     #############################################################
     # sanity check
-    assert args.mask_magnification in [2.5, 1.25], "tile_magnification should either be either 2.5 or 1.25"
+    assert args.mask_magnification in [2.5, 1.25], "tile_magnification should be either 2.5 or 1.25"
     assert os.path.isfile(args.model), "=> no checkpoint found at '{}'".format(args.model)
     #############################################################
 

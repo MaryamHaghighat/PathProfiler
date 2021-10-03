@@ -126,6 +126,7 @@ class modelIQA:
             target = torch.tensor([split_scale(item, .5) for item in target])
             # set thresholds to calculate the evaluation metrics accuracy, f1 score, etc
             thresholds = .5 * torch.ones(target.size())
+            # Threshold .25 used for staining/focus artefacts as No artefact=0, slight=0.5, severe=1
             thresholds[:, 2:4] = .25
 
             if torch.cuda.is_available():

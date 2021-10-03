@@ -95,12 +95,12 @@ class LabelSampler(Sampler):
         labels = data_source.label_list
         self.sample_size = np.round(batch_size * weights).astype(np.int)
         self.ind_class0 = np.array(np.where([int(item[1]) for item in labels])).squeeze()  # No artefact
-        self.ind_class1_1 = np.array(np.where([int(item[2]) == 1 for item in labels])).squeeze()  # staining issues
-        self.ind_class1_2 = np.array(np.where([int(item[2]) == 2 for item in labels])).squeeze()  # staining issues
-        self.ind_class2_1 = np.array(np.where([int(item[3]) == 1 for item in labels])).squeeze()  # out-of-focus
-        self.ind_class2_2 = np.array(np.where([int(item[3]) == 2 for item in labels])).squeeze()  # out-of-focus
-        self.ind_class3 = np.array(np.where([int(item[4]) for item in labels])).squeeze()  # Folding
-        self.ind_class4 = np.array(np.where([int(item[5]) for item in labels])).squeeze()  # Other
+        self.ind_class1_1 = np.array(np.where([int(item[2]) == 1 for item in labels])).squeeze()  # slight staining issues
+        self.ind_class1_2 = np.array(np.where([int(item[2]) == 2 for item in labels])).squeeze()  # severe staining issues
+        self.ind_class2_1 = np.array(np.where([int(item[3]) == 1 for item in labels])).squeeze()  # slight out-of-focus
+        self.ind_class2_2 = np.array(np.where([int(item[3]) == 2 for item in labels])).squeeze()  # severe out-of-focus
+        self.ind_class3 = np.array(np.where([int(item[4]) for item in labels])).squeeze()  # folding tissue
+        self.ind_class4 = np.array(np.where([int(item[5]) for item in labels])).squeeze()  # other artefacts
         # unusable and NOT other
         self.ind_class5 = np.array(np.where([(int(item[0]) == 0 and (item != '000002')) for item in labels])).squeeze()
 
