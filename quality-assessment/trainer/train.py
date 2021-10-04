@@ -23,7 +23,7 @@ Labels are normalized to 1 for training, i.e. we will have {0, .5, 1} target val
 parser = argparse.ArgumentParser(description='Training multi-label ResNet18 model')
 parser.add_argument('--checkpoint_folder', type=str, default='checkpoint')
 parser.add_argument('--train_dataset', type=str, default='train_list.csv')
-parser.add_argument('--val_dataset', type=str, default='test_val_list.csv')
+parser.add_argument('--val_dataset', type=str, default='val_list.csv')
 parser.add_argument('--loss_fn', type=str, default='huber', help='Choose between MSE, huber or BCE loss functions')
 parser.add_argument('--gpu_id', type=str, default='1')
 parser.add_argument('--resume', type=str, default='')
@@ -48,9 +48,6 @@ def worker_init_fn(worker_id):
 
 
 def main():
-    data = pandas.read_csv(data.csv, header=0)
-    SplitData=split_train_test_val()
-    SplitData(data)
     # Seed
     torch.manual_seed(args.seed)
     # create checkpoint folder
@@ -61,11 +58,11 @@ def main():
     X_train = data_train.filename.tolist()
     y_train = [''.join(row[1:].astype('str').tolist()) for row in data_train.values]
 
-    data_test_val = pandas.read_csv(args.val_dataset, header=0)
-    X_test_val = data_test_val.filename.tolist()
-    y_test_val = [''.join(row[1:].astype('str').tolist()) for row in data_test_val.values]
+    data_val = pandas.read_csv(args.val_dataset, header=0)
+    X_val = data_val.filename.tolist()
+    y_val = [''.join(row[1:].astype('str').tolist()) for row in data_val.values]
     train_dataset = Data(X_train, y_train, args.rand_margin)
-    val_dataset = TestData(X_test_val, y_test_val)
+    val_dataset = TestData(X_val, y_val)
     train_sampler = LabelSampler(train_dataset, batch_size=args.batch_size, weights=[.2, .1, .1, .06, .08, .2, .2, 0.06])
     kwargs = {'num_workers': args.num_workers, 'shuffle': False, 'pin_memory': True}
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_sampler=train_sampler,
