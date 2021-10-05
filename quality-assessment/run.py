@@ -52,9 +52,8 @@ def eval_quality(tile, x_y, QA_model, usblty, normal, focus_artfcts, stain_artfc
     tile = cv2.resize(np.array(tile), (224, 224), interpolation=cv2.INTER_CUBIC)
     tile = normalize(totensor(tile)).type(torch.FloatTensor)
     with torch.no_grad():
-        QA_model.eval()
-    out = QA_model.embedding(tile.unsqueeze(0)).squeeze(0).cpu()
-    out = out.data.numpy().clip(0, 1)
+        out = QA_model.embedding(tile.unsqueeze(0)).squeeze(0).cpu()
+        out = out.data.numpy().clip(0, 1)
 
     usblty[nrow, ncol] = out[0]
     normal[nrow, ncol] = out[1]
@@ -88,6 +87,7 @@ def main():
     QA_model.load_state_dict(checkpoint['state_dict'])
     print("=> loaded checkpoint '{}' (epoch {})"
           .format(args.model, checkpoint['epoch']))
+    QA_model.eval()
     if not path.exists(args.save_folder):
         os.makedirs(args.save_folder)
     dir_list = glob.glob(path.join(args.slide_dir, args.slide_id))
