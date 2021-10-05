@@ -88,6 +88,7 @@ def main():
     print("=> loaded checkpoint '{}' (epoch {})"
           .format(args.model, checkpoint['epoch']))
     QA_model.eval()
+    QA_model.cpu()
     if not path.exists(args.save_folder):
         os.makedirs(args.save_folder)
     dir_list = glob.glob(path.join(args.slide_dir, args.slide_id))
