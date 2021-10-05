@@ -27,7 +27,7 @@ parser.add_argument('--mask_magnification', default=1.25, type=float)
 parser.add_argument('--mpp_level_0', default=None, type=float)
 parser.add_argument('--gpu_id', default='0', type=str)
 parser.add_argument('--tile_size', default=512, type=int)
-parser.add_argument('--batch_size', default=8, type=int)
+parser.add_argument('--batch_size', default=32, type=int)
 args = parser.parse_args()
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
