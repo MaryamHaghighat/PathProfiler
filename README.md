@@ -6,7 +6,7 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 **How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
 
 ===================================================
-### Tissue Segmentation:
+### Tissue Segmentation
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
 A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5WnaJ4W9ynTOF1XS755CsxEa4qj/view?usp=sharing)) is trained on multiple tissue types including prostate and colon tissue to separate tissue from background. It can be deployed by running "**tissue_segmentation/run.py**" with the following arguments: 
@@ -18,7 +18,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--mpp_level_0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
 ===================================================
-###  Tile extraction
+###  Tile extraction (parallel processing on CPU)
 "**tile-extract/tiling.py**" extracts tiles from WSIs passing the following arguments:
 
 * `--slide_dir`:  path to slide directory
@@ -33,7 +33,7 @@ A UNET segmentation model ([download](https://drive.google.com/file/d/1otWor5Wna
 * `--mpp_level_0`:  manually enter mpp at level 0 if not available in slide properties as "slide.mpp['MPP']"
 
 ===================================================
-### Quality assessment 
+### Quality assessment (parallel processing on CPU)
 <img src="imgs/pipeline.jpg" align="center" />
 
 A multi-label ResNet18 model ([download](https://drive.google.com/file/d/13egPkDufR6W4aTBUAAf8uV6zQxwdBx6r/view?usp=sharing)) with 6 outputs of linear activation function is trained on image tiles from ProMPT prostate cancer cohort.  
