@@ -92,6 +92,7 @@ Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 h
 
 ### Examples 
 ####run the pipeline on TCGA slides
+
 1- Tissue segmentation
 ``` shell
 python tissue-segmentation/run.py --save_folder 'tissue-masks/TCGA' --slide_dir 'TCGA_slides_Directory' --mask_magnification 1.25 --model 'checkpoint_147800.pth'
