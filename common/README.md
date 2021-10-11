@@ -86,4 +86,4 @@ reader=get_reader_impl(filename)
 slide=reader(filename)
 tile, alpha_mask=slide.read_region_ds((1000,1000), 2**3, (512, 512), normalize=False, downsample_level_0=False)
 ```
-More examples can be found in "common/tile_processing_parallel.py", "quality-assessment/run.py".
+More usage examples can be found in "common/tile_processing_parallel.py" and "quality-assessment/run.py".
