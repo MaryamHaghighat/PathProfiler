@@ -6,16 +6,6 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 **How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
 
 ===================================================
-### Requirements:
-
-torch, torchvision, skimage, scipy, sklearn, cv2, xml, re, fractions,
-pathlib, numpy, pandas, pickle, matplotlib, tqdm, imageio. <br>
-* To read files at least one the following packages is required: <br>
-`tifffile` for TIFF-like files  in bioimaging including TIFF, BigTIFF, OME-TIFF, STK, LSM, SGI, NIHImage, ImageJ, MicroManager, FluoView, ScanImage, SEQ, GEL, SVS, SCN, SIS, BIF, ZIF (Zoomable Image File Format), QPTIFF (QPI), NDPI, and GeoTIFF files. <br>
-`openslide` for file formats supported by openslide, including SVS, TIF, VMS, VMU, NDPI, SCN, MRXS. <br>
-`pixelengine` for isyntax file format.
-
-===================================================
 ### Tissue Segmentation
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
@@ -100,6 +90,17 @@ To map the quality overlays to standard slide-level scores, run:
 
 Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 histology slides of prostate cancer collated between 2001-2018 as part of a UK-based observational study. While the model has not been trained or validated on external cohorts, we estimated quality overlays for WSIs in TCGA-prostate and FOCUS datasets  ([here](https://drive.google.com/drive/folders/1D9fIt67dBxaOqWcOXYpZWiKaYGhAXwZu?usp=sharing)) for further community investigation. Estimated  standard WSI quality scores for TCGA ([here](https://drive.google.com/file/d/1Kuz1TOQ_HHFKdeuV1bNpTAl58EDLXXM1/view?usp=sharing)) and tumor regions of FOCUS slides ([here](https://drive.google.com/file/d/1emvYNkmCuCjdDvUQOH6W4zdgOUEoLNVG/view?usp=sharing)) are also provided . With the help of community to  collect various artefacts in different tissue types, we believe the model performance will improve for external cohorts and hence this work can be extended to a comprehensive and clinically relevant quality assessment tool. 
 
+===================================================
+### Requirements:
+
+torch, torchvision, skimage, scipy, sklearn, cv2, xml, re, fractions,
+pathlib, numpy, pandas, pickle, matplotlib, tqdm, imageio. <br>
+* To read files at least one the following packages is required: <br>
+`tifffile` for TIFF-like files  in bioimaging including TIFF, BigTIFF, OME-TIFF, STK, LSM, SGI, NIHImage, ImageJ, MicroManager, FluoView, ScanImage, SEQ, GEL, SVS, SCN, SIS, BIF, ZIF (Zoomable Image File Format), QPTIFF (QPI), NDPI, and GeoTIFF files. <br>
+`openslide` for file formats supported by openslide, including SVS, TIF, VMS, VMU, NDPI, SCN, MRXS. <br>
+`pixelengine` for isyntax file format.
+
+===================================================
 ### Examples 
 ####run the pipeline on TCGA slides
 
