@@ -125,11 +125,9 @@ python tile-extract/tiling.py --save_folder 'tiles' --slide_dir 'TCGA_slides_Dir
 Current model is trained and tested on the ProMPT cohort produced and scanned in the Cellular Pathology Department at Oxford University Hospitals NHS Foundation Trust (OUHFT). To improve the model performance on other cohorts (e.g TCGA) we intend to incorporate images from different cohorts to the training process using semi-supervised techniques. However, a community effort is required to build a comprehensive quality assessment tool for histology slides and  validate results on other cohorts.
 
 ## Contact authors
-maryam.haghighat@eng.ox.ac.uk
-
-stefano.malacrino@nds.ox.ac.uk
-
-korsuk.sirinukunwattana@eng.ox.ac.uk
+maryam.haghighat@eng.ox.ac.uk <br>
+stefano.malacrino@nds.ox.ac.uk <br>
+korsuk.sirinukunwattana@eng.ox.ac.uk <br>
 
 ## License
 This code is made available under the GPLv3 License.
