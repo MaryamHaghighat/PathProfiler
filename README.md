@@ -101,8 +101,9 @@ pathlib, numpy, pandas, pickle, matplotlib, tqdm, imageio. <br>
 `pixelengine` for isyntax file format.
 
 ===================================================
+
 ### Examples 
-####run the pipeline on TCGA slides
+#### run the pipeline on TCGA slides
 
 1- Tissue segmentation
 ``` shell
