@@ -64,7 +64,7 @@ This is added as some slides contain very low quality or compression artefacts a
 ```
 
 * `get_downsampled_slide(size)`   <br>
-Return an RGB thumbnail of the slide. <br>
+Return an RGB thumbnail and corresponding alpha channel (RGB, A) of the slide. <br>
 ```
 Parameters: 
 - size (tuple): The size of the downsampled slide as (width, height). 
