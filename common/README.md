@@ -36,7 +36,7 @@ Parameter:
 
 
 * `read_region(location, level, tile_size, normalize=True, downsample_level_0=False)` <br>
-Return an RGBA image of the region of the interest (ROI).
+Return RBG image and alpha channel (RGB, A) of the region of the interest (ROI).
 
 ```
 Parameters: 
@@ -49,7 +49,7 @@ This is added as some slides contain very low quality or compression artefacts a
 ```
 
 * `read_region_ds(location, downsample, tile_size, normalize=True, downsample_level_0=False)` <br>
-Return an RGBA image of the ROI by downsampling slide from the best level.
+Return RBG image and alpha channel (RGB, A) of the ROI by downsampling slide from the best level.
 In many slides, the number of "level" and "level_downsamples" are not necessarily consistent, i.e.  2^level ≠ level_downsample[level].
 This method finds the best (closest) available level to get the ROI based on downsample factor.
 
@@ -77,4 +77,11 @@ Parameters:
 - downsample (float): The downsampling factor.
 ``` 
 
+===================================================
 
+### Examples 
+``` shell
+reader=get_reader_impl(filename)
+slide=reader(filename)
+tile, alpha_mask=slide.read_region_ds((1000,1000), 2**3, (512, 512), normalize=False, downsample_level_0=False)
+```
