@@ -6,6 +6,16 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 **How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
 
 ===================================================
+### Requirements:
+
+torch, torchvision, skimage, scipy, sklearn, cv2, xml, re, fractions,
+pathlib, numpy, pandas, pickle, matplotlib, tqdm, imageio. <br>
+* To read files at least one the following packages is required: <br>
+`tifffile` for TIFF-like files  in bioimaging including TIFF, BigTIFF, OME-TIFF, STK, LSM, SGI, NIHImage, ImageJ, MicroManager, FluoView, ScanImage, SEQ, GEL, SVS, SCN, SIS, BIF, ZIF (Zoomable Image File Format), QPTIFF (QPI), NDPI, and GeoTIFF files. <br>
+`openslide` for file formats supported by openslide, including SVS, TIF, VMS, VMU, NDPI, SCN, MRXS. <br>
+`pixelengine` for isyntax file format.
+
+===================================================
 ### Tissue Segmentation
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
