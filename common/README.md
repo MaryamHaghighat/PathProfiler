@@ -51,7 +51,7 @@ This is added as some slides contain very low quality or compression artefacts a
 * `read_region_ds(location, downsample, tile_size, normalize=True, downsample_level_0=False)` <br>
 Return an RGBA image of the ROI by downsampling slide from the best level.
 In many slides, the number of "level" and "level_downsamples" are not necessarily consistent, i.e.  2^level ≠ level_downsample[level].
-This method finds the best (closest) available level to get the ROI based on downsample factor rather than level.
+This method finds the best (closest) available level to get the ROI based on downsample factor.
 
 ```
 Parameters: 
