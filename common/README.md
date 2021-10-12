@@ -56,7 +56,7 @@ This method finds the best (closest) available level to get the ROI based on dow
 ```
 Parameters: 
 - location (tuple): (x, y) the top left pixel position in the downsampled slide. 
-- downsample (float): downsample factor with respect to the image at level 0, e.g. 2**k to get ROI from kth (consecutive) level.
+- downsample (float): downsample factor with respect to the image at level 0.
 - tile_size (tuple): (width, height) the size of the ROI.
 - normalize (bool): True to return pixel values in the range of [0-1].
 - downsample_level_0 (bool): True to return an image by downsampling ROI from level 0. 
