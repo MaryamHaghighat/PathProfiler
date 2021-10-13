@@ -6,6 +6,11 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 **How does it work?** A  multi-task deep neural network is trained to predict if an image tile is usable for diagnosis/research and the  kind of artefacts present in the image tile. Quality overlays are then generated from image tile predictions. Quality overlays are further mapped to a standard  scoring system to predict the usability,  focus and staining quality of the whole slide images.
 
 ===================================================
+### Whole Slide Image Reader
+The WSI reader (wsi_reader.py) unifies image readers from openslide, tifffile and pixelengine and introduces useful methods to facilitate working with WSIs.
+For more details see (https://github.com/MaryamHaghighat/PathProfiler/tree/master/common).
+
+===================================================
 ### Tissue Segmentation
 <img src="imgs/tissue_segmentation.jpg" align="center" />
 
