@@ -7,7 +7,7 @@ In this study, a quality assessment pipeline is  proposed in which possible mult
 
 ===================================================
 ### Whole Slide Image Reader
-The WSI reader (wsi_reader.py) unifies image readers from openslide, tifffile and pixelengine and introduces useful methods to facilitate working with WSIs.
+The WSI reader (common/wsi_reader.py) unifies image readers from openslide, tifffile and pixelengine and introduces useful methods to facilitate working with WSIs.
 For more details see (https://github.com/MaryamHaghighat/PathProfiler/tree/master/common).
 
 ===================================================
