@@ -36,7 +36,7 @@ Parameter:
 
 
 * `read_region(location, level, tile_size, normalize=True, downsample_level_0=False)` <br>
-Return RBG image and alpha channel (RGB, A) of the region of the interest (ROI).
+Returns a tuple of pixel data and alpha mask of the region of the interest (ROI) at the specified level.
 
 ```
 Parameters: 
@@ -49,9 +49,7 @@ This is added as some slides contain very low quality or compression artefacts a
 ```
 
 * `read_region_ds(location, downsample, tile_size, normalize=True, downsample_level_0=False)` <br>
-Return RBG image and alpha channel (RGB, A) of the ROI by downsampling slide from the best level.
-In many slides, the number of "level" and "level_downsamples" are not necessarily consistent, i.e.  2^level ≠ level_downsample[level].
-This method finds the best (closest) available level to get the ROI based on downsample factor.
+Returns a tuple of pixel data and alpha mask of the ROI at the specified downsampled factor with respect to level 0.
 
 ```
 Parameters: 
@@ -64,14 +62,14 @@ This is added as some slides contain very low quality or compression artefacts a
 ```
 
 * `get_downsampled_slide(size)`   <br>
-Return an RGB thumbnail and corresponding alpha channel (RGB, A) of the slide. <br>
+Returns a tuple of pixel data and alpha mask of the slide thumbnail of the specified size. <br>
 ```
 Parameters: 
-- size (tuple): The size of the downsampled slide as (width, height). 
+- size (tuple): The size of the slide thumbnail as (width, height). 
 ``` 
 
 * `get_best_level_for_downsample(downsample)` <br>
-Return the best level for displaying the given downsample.
+Returns the best level for the given downsample factor.
 ```
 Parameters: 
 - downsample (float): The downsampling factor.
