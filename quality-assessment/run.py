@@ -102,7 +102,7 @@ def main():
     tmp_usblty_file = path.join(mkdtemp(), 'tmp_usblty_file.csv')
     tmp_processed_region_file = path.join(mkdtemp(), 'tmp_processed_region_file.csv')
 
-    mpp2mag = {.2: 40, .3: 40, .5: 20, 1: 10}
+    mpp2mag = {.25: 40, .5: 20, 1: 10}
     for filename in dir_list:
         start = timeit.default_timer()
         basename = path.basename(filename)
@@ -134,7 +134,7 @@ def main():
                 print('slide mpp is not available as "slide.mpp"\n use --mpp_level_0 to enter mpp at level 0 manually.')
                 continue
         print('Processing', basename)
-        wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
+        wsi_highest_magnification = mpp2mag[.25 * round(float(mpp) / .25)]
         downsample = wsi_highest_magnification / 5.  # Model is trained for tiles at 5X
         w, h = int(np.round(slide.level_dimensions[0][0]/downsample)), int(np.round(slide.level_dimensions[0][1]/downsample))
         w_map, h_map = int(np.round(w/args.tile_size)), int(np.round(h/args.tile_size))
