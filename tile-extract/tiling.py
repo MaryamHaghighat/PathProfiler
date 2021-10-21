@@ -50,7 +50,7 @@ def save_tile(tile, x_y, wsi_highest_magnification, save_folder, slide_name, til
 
 def main():
     dir_list = glob.glob(os.path.join(args.slide_dir, args.slide_id))
-    mpp2mag = {.2: 40, .3: 40, .5: 20, 1: 10}
+    mpp2mag = {.25: 40, .5: 20, 1: 10}
     for filename in dir_list:
         start = timeit.default_timer()
         basename = os.path.basename(filename)
@@ -80,7 +80,7 @@ def main():
         save_folder = os.path.join(args.save_folder, slide_name, f'{args.tile_magnification}x')
         if not os.path.exists(save_folder):
             os.makedirs(save_folder)
-        wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
+        wsi_highest_magnification = mpp2mag[.25 * round(float(mpp) / .25)]
         downsample = wsi_highest_magnification / args.tile_magnification
         process_tiles(filename, args.tile_size, args.tile_magnification, args.stride, downsample, args.ds_level_0,
                       mask_path, args.mask_magnification, args.mask_ratio,
