@@ -121,7 +121,7 @@ class TilePrediction(object):
         :param filename:
         :return:
         """
-        mpp2mag = {.2: 40, .3: 40, .5: 20, 1: 10}
+        mpp2mag = {.25: 40, .5: 20, 1: 10}
         reader = get_reader_impl(filename)
         slide = reader(filename)
         if args.mpp_level_0:
@@ -132,8 +132,7 @@ class TilePrediction(object):
                 mpp = slide.mpp[0]
             except:
                 print('slide mpp is not available as "slide.mpp"\n use --mpp_level_0 to enter mpp at level 0 manually.')
-
-        wsi_highest_magnification = mpp2mag[np.round(mpp, 1)]
+        wsi_highest_magnification = mpp2mag[.25 * round(float(mpp) / .25)]
         downsample = wsi_highest_magnification / args.mask_magnification
         slide_level_dimensions = (int(np.round(slide.level_dimensions[0][0]/downsample)),
                                   int(np.round(slide.level_dimensions[0][1]/downsample)))
