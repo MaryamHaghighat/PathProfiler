@@ -311,8 +311,8 @@ def main():
                 segmentation = remove_small_objects(segmentation == 255, 50**2)
                 segmentation = (segmentation*255).astype(np.uint8)
                 cv2.imwrite(savename, segmentation)
-            except:
-                print('Skipped slide', basename)
+            except Exception as e:
+                print(e,'\nSkipped slide', basename)
                 continue
 
 #############################################################################################
