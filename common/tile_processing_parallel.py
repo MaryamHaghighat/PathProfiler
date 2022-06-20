@@ -31,17 +31,17 @@ class TileWorker(Process):
             if data_in is None:
                 break
             x_y = data_in
-#            try:
-            tile, _ = self.slide.read_region_ds(x_y, self.downsample, (self.tile_size, self.tile_size),
-                                                normalize=False, downsample_level_0=self.ds_level_0)
-            tile = self.processing_fn(tile, x_y, *self.processing_fn_args)
-            if self.output is not None:
-                x, y = x_y
-                self.output[y:y+self.tile_size, x:x+self.tile_size] = tile
-#            except:
+            try:
+                tile, _ = self.slide.read_region_ds(x_y, self.downsample, (self.tile_size, self.tile_size),
+                                                    normalize=False, downsample_level_0=self.ds_level_0)
+                tile = self.processing_fn(tile, x_y, *self.processing_fn_args)
+                if self.output is not None:
+                    x, y = x_y
+                    self.output[y:y+self.tile_size, x:x+self.tile_size] = tile
+            except:
                 # handle tiles without data
-            reader = get_reader_impl(self.slide_path)
-            self.slide = reader(self.slide_path)
+                reader = get_reader_impl(self.slide_path)
+                self.slide = reader(self.slide_path)
 
 
 def _get_mask(mask_path):
