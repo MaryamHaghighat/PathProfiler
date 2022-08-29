@@ -142,9 +142,21 @@ This code is made available under the GPLv3 License.
 This work is supported by the PathLAKE Centre of Excellence for digital pathology and AI which is funded, managed and delivered by Innovate UK on behalf of UK Research and Innovation (UKRI). 
 
 ## Reference
-Please refer to our pre-print (https://www.medrxiv.org/content/10.1101/2021.09.24.21263762v1) for detailed results.
+Please refer to our published paper (https://www.nature.com/articles/s41598-022-08351-5#citeas) for detailed results.
 If you find our work useful in your research or if you use parts of this code please consider citing our paper:
 ```
+@article {Haghighat_Scientific_Reports,
+	author = {Haghighat, Maryam and Browning, Lisa and Sirinukunwattana, Korsuk and Malacrino, Stefano and Alham, Nasullah Khalid and Colling, Richard and Cui, Ying and Rakha, Emad and Hamdy, Freddie and Verrill, Clare and Rittscher, Jens},
+	title = {Automated quality assessment of large digitised histology cohorts by artificial intelligence},
+	journal={Scientific Reports},
+	volume={12},
+	number={1},
+	pages={1--16},
+	year={2022},
+        publisher={Nature Publishing Group}
+	doi = {10.1038/s41598-022-08351-5},
+}
+
 @article {Haghighat_PathProfiler,
 	author = {Haghighat, Maryam and Browning, Lisa and Sirinukunwattana, Korsuk and Malacrino, Stefano and Alham, Nasullah Khalid and Colling, Richard and Cui, Ying and Rakha, Emad and Hamdy, Freddie and Verrill, Clare and Rittscher, Jens},
 	title = {PathProfiler: Automated Quality Assessment of Retrospective Histopathology Whole-Slide Image Cohorts by Artificial Intelligence, A Case Study for Prostate Cancer Research},
