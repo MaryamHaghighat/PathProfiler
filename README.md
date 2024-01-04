@@ -99,7 +99,7 @@ Our model has been only exposed to artefacts in ProMPT, a local cohort of 4732 h
 ### Requirements:
 
 python, torch, torchvision, skimage, scipy, sklearn, cv2, xml, re, fractions,
-pathlib, numpy, pandas, pickle, matplotlib, tqdm, imageio. <br>
+pathlib, numpy, pandas, pickle, matplotlib, tqdm, imageio, zarr. <br>
 * To read files at least one the following packages is required: <br>
 `tifffile` for TIFF-like files  in bioimaging including TIFF, BigTIFF, OME-TIFF, STK, LSM, SGI, NIHImage, ImageJ, MicroManager, FluoView, ScanImage, SEQ, GEL, SVS, SCN, SIS, BIF, ZIF (Zoomable Image File Format), QPTIFF (QPI), NDPI, and GeoTIFF files. <br>
 `openslide-python` for file formats supported by openslide, including SVS, TIF, VMS, VMU, NDPI, SCN, MRXS. <br>

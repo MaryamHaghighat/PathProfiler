@@ -15,6 +15,7 @@ from tempfile import mkdtemp
 from torchvision import transforms
 import torch
 from matplotlib import cm
+import zarr
 
 
 '''
@@ -43,10 +44,7 @@ parser.add_argument('--save_folder', default='quality-overlays', type=str, help=
 args = parser.parse_args()
 
       
-def eval_quality(tile, x_y, QA_model, usblty, normal, focus_artfcts, stain_artfcts, other_artfcts, folding_artfcts,
-                 processed_region):
-    ncol, nrow = x_y
-    ncol, nrow = int(ncol/tile.shape[1]), int(nrow/tile.shape[0])
+def eval_quality(tile, x_y, QA_model):
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     totensor = transforms.ToTensor()
     tile = cv2.resize(np.array(tile), (224, 224), interpolation=cv2.INTER_CUBIC)
@@ -54,6 +52,7 @@ def eval_quality(tile, x_y, QA_model, usblty, normal, focus_artfcts, stain_artfc
     with torch.no_grad():
         out = QA_model.embedding(tile.unsqueeze(0)).squeeze(0).cpu()
         out = out.data.numpy().clip(0, 1)
+    return np.pad(out, (0, 1), mode='constant', constant_values=1)
 
     usblty[nrow, ncol] = out[0]
     normal[nrow, ncol] = out[1]
@@ -93,15 +92,6 @@ def main():
         os.makedirs(args.save_folder)
     dir_list = glob.glob(path.join(args.slide_dir, args.slide_id))
 
-    output_dtype = 'float16'
-    tmp_focus_artfcts_file = path.join(mkdtemp(), 'tmp_focus_artfcts_file.csv')
-    tmp_stain_artfcts_file = path.join(mkdtemp(), 'tmp_stain_artfcts_file.csv')
-    tmp_normal_file = path.join(mkdtemp(), 'tmp_normal_file.csv')
-    tmp_other_artfcts_file = path.join(mkdtemp(), 'tmp_other_artfcts_file.csv')
-    tmp_folding_artfcts_file = path.join(mkdtemp(), 'tmp_folding_artfcts_file.csv')
-    tmp_usblty_file = path.join(mkdtemp(), 'tmp_usblty_file.csv')
-    tmp_processed_region_file = path.join(mkdtemp(), 'tmp_processed_region_file.csv')
-
     mpp2mag = {.25: 40, .5: 20, 1: 10}
     for filename in dir_list:
         start = timeit.default_timer()
@@ -138,37 +128,40 @@ def main():
         downsample = wsi_highest_magnification / 5.  # Model is trained for tiles at 5X
         w, h = int(np.round(slide.level_dimensions[0][0]/downsample)), int(np.round(slide.level_dimensions[0][1]/downsample))
         w_map, h_map = int(np.round(w/args.tile_size)), int(np.round(h/args.tile_size))
-        focus_artfcts = np.memmap(tmp_focus_artfcts_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        stain_artfcts = np.memmap(tmp_stain_artfcts_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        normal = np.memmap(tmp_normal_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        other_artfcts = np.memmap(tmp_other_artfcts_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        folding_artfcts = np.memmap(tmp_folding_artfcts_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        usblty = np.memmap(tmp_usblty_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        processed_region = np.memmap(tmp_processed_region_file, dtype=output_dtype, mode='w+', shape=(h_map, w_map))
-        process_tiles(filename, args.tile_size, 5.0, args.tile_size, downsample, True, mask_path, args.mask_magnification, args.mask_ratio,
-                      eval_quality, QA_model, usblty, normal, focus_artfcts, stain_artfcts,
-                      other_artfcts, folding_artfcts, processed_region, n_workers=args.workers)
-        slide_info = {'focus_artfcts': focus_artfcts, 'stain_artfcts': stain_artfcts, 'normal': normal,
-                      'other_artfcts': other_artfcts, 'folding_artfcts': folding_artfcts, 'usblty': usblty,
-                      'processed_region': processed_region}
+        store = zarr.TempStore()
+        try:
+            output_zarr = zarr.open(store, mode='w-', shape=(h_map, w_map, 7), chunks=(1, 1, 7), dtype=np.float16)
+            output = process_tiles(filename, args.tile_size, 5.0, args.tile_size, downsample, True, output_zarr, mask_path, args.mask_magnification, args.mask_ratio,
+                        eval_quality, QA_model, n_workers=args.workers, unpad=False)
+            slide_info = {
+                'usblty': output[:,:,0],
+                'normal': output[:,:,1],
+                'stain_artfcts': output[:,:,2],
+                'focus_artfcts': output[:,:,3],
+                'folding_artfcts': output[:,:,4], 
+                'other_artfcts': output[:,:,5],
+                'processed_region': output[:,:,6]
+            }
+        finally:
+            store.rmdir()
         stop = timeit.default_timer()
         print('Time: ', stop - start)
         np.save(path.join(args.save_folder, slide_name + '_quality_overlays.npy'), slide_info)
 
         cv2.imwrite(path.join(args.save_folder, slide_name + '_usability.png'),
-                    generate_heatmap(usblty[:], processed_region, args.overlay_magnification))
+                    generate_heatmap(slide_info['usblty'], slide_info['processed_region'], args.overlay_magnification))
         cv2.imwrite(path.join(args.save_folder, slide_name + '_normal.png'),
-                    generate_heatmap(normal[:], processed_region, args.overlay_magnification))
+                    generate_heatmap(slide_info['normal'], slide_info['processed_region'], args.overlay_magnification))
         cv2.imwrite(path.join(args.save_folder, slide_name + '_staining_artfcts.png'),
-                    generate_heatmap(stain_artfcts[:], processed_region, args.overlay_magnification))
+                    generate_heatmap(slide_info['stain_artfcts'], slide_info['processed_region'], args.overlay_magnification))
         cv2.imwrite(path.join(args.save_folder, slide_name + '_focus_artfcts.png'),
-                    generate_heatmap(focus_artfcts[:], processed_region, args.overlay_magnification))
+                    generate_heatmap(slide_info['focus_artfcts'], slide_info['processed_region'], args.overlay_magnification))
         cv2.imwrite(path.join(args.save_folder, slide_name + '_other_artfcts.png'),
-                    generate_heatmap(other_artfcts[:], processed_region, args.overlay_magnification))
+                    generate_heatmap(slide_info['other_artfcts'], slide_info['processed_region'], args.overlay_magnification))
         cv2.imwrite(path.join(args.save_folder, slide_name + '_folding_artfcts.png'),
-                    generate_heatmap(folding_artfcts[:], processed_region, args.overlay_magnification))
+                    generate_heatmap(slide_info['folding_artfcts'], slide_info['processed_region'], args.overlay_magnification))
         cv2.imwrite(path.join(args.save_folder, slide_name + '_processed_region.png'),
-                    generate_heatmap(processed_region[:], processed_region, args.overlay_magnification))
+                    generate_heatmap(slide_info['processed_region'], slide_info['processed_region'], args.overlay_magnification))
 
     print('Done!')
 
