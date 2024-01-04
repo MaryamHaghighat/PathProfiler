@@ -1,16 +1,3 @@
-try:
-    import openslide
-    import tifffile
-except:
-    pass
-
-try:
-    from pixelengine import PixelEngine
-    from softwarerendercontext import SoftwareRenderContext
-    from softwarerenderbackend import SoftwareRenderBackend
-except:
-    pass
-    
 import numpy as np
 from pathlib import Path
 import cv2
@@ -53,7 +40,7 @@ class WSIReader:
             x = x // downsample
             y = y // downsample
             tile = cv2.resize(tile, (tile_w, tile_h), interpolation=cv2.INTER_CUBIC)
-            alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), (tile_w, tile_h), interpolation=cv2.INTER_CUBIC).astype(np.bool)
+            alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), (tile_w, tile_h), interpolation=cv2.INTER_CUBIC).astype(bool)
         
         if normalize:
             tile = self._normalize(tile)
@@ -73,7 +60,7 @@ class WSIReader:
         tile_size_level = [round(dim * downsample / self.level_downsamples[level]) for dim in tile_size]
         tile, alfa_mask = self.read_region(x_y_level, level, tile_size_level, False, False)
         tile = cv2.resize(tile, tile_size, interpolation=cv2.INTER_CUBIC)
-        alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), tile_size, interpolation=cv2.INTER_CUBIC).astype(np.bool)
+        alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), tile_size, interpolation=cv2.INTER_CUBIC).astype(bool)
         
         if normalize:
             tile = self._normalize(tile)
@@ -97,7 +84,7 @@ class WSIReader:
         level = self.get_best_level_for_downsample(downsample)
         slide_downsampled, alfa_mask = self.read_region((0,0), level, self.level_dimensions[level], normalize=normalize)
         slide_downsampled = cv2.resize(slide_downsampled, dims, interpolation=cv2.INTER_CUBIC)
-        alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), dims, interpolation=cv2.INTER_CUBIC).astype(np.bool)
+        alfa_mask = cv2.resize(alfa_mask.astype(np.uint8), dims, interpolation=cv2.INTER_CUBIC).astype(bool)
         return slide_downsampled, alfa_mask
         
     @property
@@ -143,6 +130,7 @@ class WSIReader:
         
 class OpenSlideReader(WSIReader):
     def __init__(self, slide_path):
+        import openslide
         self.slide_path = slide_path
         self._slide = openslide.open_slide(str(slide_path))
         
@@ -153,6 +141,9 @@ class OpenSlideReader(WSIReader):
             delattr(self, '_tile_dimensions')
            
     def _read_region(self, x_y, level, tile_size):
+        ds = self.level_downsamples[level]
+        x, y = x_y
+        x_y = round(x * ds), round(y * ds)
         tile = np.array(self._slide.read_region(x_y, level, tile_size), dtype=np.uint8)
         alfa_mask = tile[:,:,3] > 0
         tile = tile[:,:,:3]
@@ -192,12 +183,13 @@ class OpenSlideReader(WSIReader):
             for level in range(self.level_count):
                 tile_width = self._slide.properties[f'openslide.level[{level}].tile-width']
                 tile_height = self._slide.properties[f'openslide.level[{level}].tile-height']
-                self._tile_dimensions.append((tilewidth, tilelength))
+                self._tile_dimensions.append((tile_width, tile_height))
         return self._tile_dimensions
     
     
 class TiffReader(WSIReader):
     def __init__(self, slide_path, series=0):
+        import tifffile
         self.slide_path = slide_path
         self.series = series
         self._reader = tifffile.TiffFile(str(slide_path))
@@ -234,7 +226,7 @@ class TiffReader(WSIReader):
             planes = np.concatenate(planes, -1)
 
         if len(alfa_mask) == 0:
-            alfa_mask = np.ones(planes.shape[:2], dtype=np.bool)
+            alfa_mask = np.ones(planes.shape[:2], dtype=bool)
         elif len(alfa_mask) > 1 and alfa_mask[0].ndim == 2:
             alfa_mask = np.stack(alfa_mask, -1)
         else:
@@ -345,6 +337,7 @@ class TiffReader(WSIReader):
             self._mpp = (None, None)
             page = self._reader.series[0].levels[0].pages[0]
             if page.is_svs:
+                import tifffile
                 metadata = tifffile.tifffile.svs_description_metadata(page.description)
                 self._mpp = (metadata['MPP'], metadata['MPP'])
             elif page.is_ome:
@@ -376,6 +369,9 @@ class TiffReader(WSIReader):
 
 class IsyntaxReader(WSIReader):
     def __init__(self, slide_path):
+        from pixelengine import PixelEngine
+        from softwarerendercontext import SoftwareRenderContext
+        from softwarerenderbackend import SoftwareRenderBackend
         self.slide_path = slide_path
         self._pe = PixelEngine(SoftwareRenderBackend(), SoftwareRenderContext())
         self._pe['in'].open(str(slide_path), 'ficom')
