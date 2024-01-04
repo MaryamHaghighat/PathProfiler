@@ -12,7 +12,6 @@ import cv2
 import csv
 import timeit
 import os.path as path
-from tempfile import mkdtemp
 from torchvision import transforms
 import torch
 from matplotlib import cm
@@ -54,14 +53,6 @@ def eval_quality(tile, x_y, QA_model):
         out = QA_model.embedding(tile.unsqueeze(0)).squeeze(0).cpu()
         out = out.data.numpy().clip(0, 1)
     return np.pad(out, (0, 1), mode='constant', constant_values=1)
-
-    usblty[nrow, ncol] = out[0]
-    normal[nrow, ncol] = out[1]
-    stain_artfcts[nrow, ncol] = out[2]
-    focus_artfcts[nrow, ncol] = out[3]
-    folding_artfcts[nrow, ncol] = out[4]
-    other_artfcts[nrow, ncol] = out[5]
-    processed_region[nrow, ncol] = 1
 
 
 def generate_heatmap(overlay, processed_region, heatmap_mag):
