@@ -1,5 +1,6 @@
 import sys
-sys.path.extend(["../.", "."])
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
 from common.wsi_reader import get_reader_impl
 import os
 import gc

@@ -1,5 +1,6 @@
 import sys
-sys.path.extend(["../.", "."])
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).absolute().parent.parent))
 from common.wsi_reader import get_reader_impl
 from common.tile_processing_parallel import process_tiles
 from common.models import ResNet18
