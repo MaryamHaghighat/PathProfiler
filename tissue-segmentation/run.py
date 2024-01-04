@@ -170,10 +170,10 @@ class TilePrediction(object):
         """
         window_size = effective_window_size
         intersection = int(window_size / 4)
-        wind_outer = (abs(2 * (scipy.signal.triang(window_size))) ** power) / 2
+        wind_outer = (abs(2 * (scipy.signal.windows.triang(window_size))) ** power) / 2
         wind_outer[intersection:-intersection] = 0
 
-        wind_inner = 1 - (abs(2 * (scipy.signal.triang(window_size) - 1)) ** power) / 2
+        wind_inner = 1 - (abs(2 * (scipy.signal.windows.triang(window_size) - 1)) ** power) / 2
         wind_inner[:intersection] = 0
         wind_inner[-intersection:] = 0
 

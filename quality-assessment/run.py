@@ -14,7 +14,7 @@ import timeit
 import os.path as path
 from torchvision import transforms
 import torch
-from matplotlib import cm
+from matplotlib import colormaps
 import zarr
 
 
@@ -56,7 +56,7 @@ def eval_quality(tile, x_y, QA_model):
 
 
 def generate_heatmap(overlay, processed_region, heatmap_mag):
-    cmap = cm.get_cmap('bwr')
+    cmap = colormaps.get_cmap('bwr')
     heatmap = cmap(overlay)
     heatmap = (heatmap * 255).astype(np.uint8)
     heatmap[processed_region == 0] = 128

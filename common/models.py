@@ -19,7 +19,7 @@ class ResNet18(nn.Module):
     def __init__(self, n_classes):
         super(ResNet18, self).__init__()
 
-        resnet = models.resnet18(pretrained=True)
+        resnet = models.resnet18()
         self.resnet = nn.Sequential(*list(resnet.children())[:-1])
         self.down = nn.Linear(512, n_classes)
 
