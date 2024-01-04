@@ -303,7 +303,7 @@ def main():
     slide_list=glob.glob(os.path.join(args.slide_dir, args.slide_id))
     for slide in slide_list:
         basename = os.path.splitext(os.path.basename(slide))[0]
-        savename = os.path.join(args.save_folder, basename + '.jpg')
+        savename = os.path.join(args.save_folder, basename + '.png')
 
         if not os.path.exists(savename):
             print('Processing', slide)

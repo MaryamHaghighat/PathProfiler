@@ -101,7 +101,7 @@ def main():
                 csv_writer = csv.writer(csvfile)
                 csv_writer.writerow([filename])
             continue
-        mask_path = path.join(args.mask_dir, slide_name + '.jpg')
+        mask_path = path.join(args.mask_dir, slide_name + '.png')
         if not path.exists(mask_path):
             print('NO TISSUE MASK FOUND at', mask_path)
             continue
